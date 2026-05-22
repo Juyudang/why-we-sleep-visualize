@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Why We Sleep Visual Notes</title>
+    <link rel="stylesheet" href="../styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="topbar" aria-labelledby="page-title">
+        <div>
+          <p class="eyebrow">Visual Note 01</p>
+          <h1 id="page-title">아데노신과 수면압력</h1>
+        </div>
+        <div class="chapter-pill">Chapter: Sleep Pressure</div>
+      </section>
+
+      <section class="visual-stage" aria-label="아데노신과 수면압력 시뮬레이터">
+        <div class="chart-header">
+          <div>
+            <h2>72시간 동안의 흐름</h2>
+            <p>
+              아데노신은 깨어 있을 때 쌓이고, 하루주기는 sin 곡선으로 오르내립니다.
+              자동수면을 켜면 임계값에 닿을 때 잠들고, 강제수면 모드에서는 차트 위를 드래그해 원하는 수면 구간을 만들 수 있습니다.
+            </p>
+          </div>
+          <div class="legend" aria-label="그래프 범례">
+            <span><i class="swatch swatch-adenosine"></i>아데노신</span>
+            <span><i class="swatch swatch-circadian"></i>하루주기</span>
+            <span><i class="swatch swatch-pressure"></i>수면압력</span>
+          </div>
+        </div>
+
+        <div class="control-panel" aria-label="시뮬레이션 조절">
+          <label>
+            <span>아데노신 쌓이는 속도 <b id="rateValue"></b></span>
+            <input id="adenosineRate" type="range" min="0.02" max="0.1" step="0.005" value="0.055" />
+          </label>
+          <label>
+            <span>아데노신 시작지점 <b id="initialAdenosineValue"></b></span>
+            <input id="initialAdenosine" type="range" min="0" max="1.6" step="0.025" value="0.18" />
+          </label>
+          <label>
+            <span>수면 중 감소 속도 <b id="decayValue"></b></span>
+            <input id="sleepDecayRate" type="range" min="0.1" max="1.2" step="0.025" value="0.72" />
+          </label>
+          <label>
+            <span>하루주기 간격 <b id="cycleValue"></b></span>
+            <input id="cycleInterval" type="range" min="20" max="28" step="0.05" value="24.25" />
+          </label>
+          <label>
+            <span>하루주기 시작지점 <b id="phaseValue"></b></span>
+            <input id="cycleStart" type="range" min="0" max="24" step="0.5" value="1" />
+          </label>
+          <label>
+            <span>수면 임계값 <b id="thresholdValue"></b></span>
+            <input id="sleepThreshold" type="number" min="0" step="0.025" value="0.45" />
+          </label>
+          <label>
+            <span>수면 한계 시간 <b id="sleepLimitValue"></b></span>
+            <input id="sleepLimit" type="range" min="2" max="14" step="0.25" value="9" />
+          </label>
+          <label class="toggle-card">
+            <span>자동수면 <b id="autoSleepValue"></b></span>
+            <input id="autoSleep" type="checkbox" checked />
+          </label>
+          <label class="toggle-card">
+            <span>강제수면 만들기 <b id="forcedModeValue"></b></span>
+            <input id="forcedMode" type="checkbox" />
+          </label>
+          <div class="sleep-controls">
+            <div class="drag-help">
+              강제수면 만들기를 켜고 그래프 위를 드래그하면 구간이 생성됩니다. 짧게 두 번 클릭해 시작과 끝을 찍어도 됩니다. 생성된 강제수면 영역을 클릭하면 삭제됩니다.
+              <b id="forcedCountValue"></b>
+            </div>
+            <div class="button-row">
+              <button id="clearForcedSleep" type="button">강제수면 모두 해제</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="chart-frame">
+          <svg id="sleepChart" role="img" aria-labelledby="chart-title chart-desc"></svg>
+          <div class="axis-label axis-y">상대 수치</div>
+        </div>
+      </section>
+
+      <section class="insight-grid" aria-label="핵심 설명">
+        <article>
+          <span class="metric">01</span>
+          <h3>아데노신 누적</h3>
+          <p>깨어 있는 동안 빠르게 쌓이다가 점점 완만해지는 곡선으로 증가합니다.</p>
+        </article>
+        <article>
+          <span class="metric">02</span>
+          <h3>하루주기</h3>
+          <p>sin 곡선으로 표현한 각성 신호입니다. 간격과 시작지점을 바꾸면 잠드는 시간이 이동합니다.</p>
+        </article>
+        <article>
+          <span class="metric">03</span>
+          <h3>자동수면</h3>
+          <p>자동수면은 임계값 기준으로 발생하고, 강제수면은 설정한 시작과 기간을 우선 적용합니다.</p>
+        </article>
+      </section>
+    </main>
+
+    <script src="../app.js"></script>
+  </body>
+</html>
