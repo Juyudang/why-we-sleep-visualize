@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Why We Sleep Visual Notes</title>
+    <link rel="stylesheet" href="../styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="topbar" aria-labelledby="page-title">
+        <div>
+          <p class="eyebrow">Visual Note 02</p>
+          <h1 id="page-title">움직이는 대포</h1>
+        </div>
+        <div class="chapter-pill">Chapter: Drowsy Driving</div>
+      </section>
+
+      <section class="visual-stage" aria-label="졸음운전 시뮬레이터">
+        <div class="chart-header">
+          <div>
+            <h2>수면시간을 정하고 도로에 나가보세요</h2>
+            <p>
+              졸음운전에서 문제가 되는 것은 반응이 느려지는 것이 아니라 반응이 아예 사라지는 순간입니다.
+              몇 초 동안 눈이 감기는 미세수면 동안에도 차는 같은 속도로 달립니다.
+              수면시간을 낮출수록 눈이 감길 확률과 감겨 있는 시간이 함께 늘어납니다.
+            </p>
+          </div>
+          <div class="legend" aria-label="조작 안내">
+            <span><i class="swatch swatch-pressure"></i>← → 방향키로 조향</span>
+            <span><i class="swatch swatch-caffeine"></i>암전 중에는 조작 불가</span>
+          </div>
+        </div>
+
+        <div class="control-panel drive-controls">
+          <label>
+            <span>수면시간 <b id="sleepHoursValue"></b></span>
+            <input id="sleepHours" type="range" min="2" max="10" step="0.5" value="6" />
+          </label>
+          <label>
+            <span>주행 속도 <b id="speedValue"></b></span>
+            <input id="speed" type="range" min="60" max="180" step="5" value="130" />
+            <small id="speedHint"></small>
+          </label>
+          <div class="stat-card">
+            <span>눈이 감길 확률</span>
+            <b id="probValue"></b>
+            <small id="probHint"></small>
+          </div>
+          <div class="stat-card">
+            <span>한 번 감기면</span>
+            <b id="closeValue"></b>
+            <small id="closeHint"></small>
+          </div>
+        </div>
+
+        <div class="dual-charts">
+          <figure class="mini-chart">
+            <figcaption>
+              시뮬레이터 곡선: 판정당 눈이 감길 확률
+              <span class="drag-badge">그래프를 좌우로 드래그해 수면시간 조절</span>
+            </figcaption>
+            <svg id="riskCurve" role="img" aria-label="수면시간에 따른 미세수면 발생 확률 곡선"></svg>
+            <small>
+              로그 곡선 하나로 정합니다. ln(8 ÷ 수면시간) ÷ ln(4) — 2시간에서 100%, 8시간에서 0%가 되고
+              그 위로는 계속 0입니다. 눈이 감겨 있는 시간도 같은 값에서 나옵니다. 게임용으로 조정한 값입니다.
+            </small>
+          </figure>
+
+          <figure class="mini-chart">
+            <figcaption>실제 데이터: 수면시간별 자동차 사고율 (7시간 이상 = 1.0배)</figcaption>
+            <svg id="crashRiskChart" role="img" aria-label="수면시간 구간별 자동차 사고율 비교"></svg>
+            <small>
+              출처: AAA Foundation for Traffic Safety, Tefft (2016). 책에서 그림 12로 인용된 데이터입니다.
+              시뮬레이터 수치와는 별개입니다.
+            </small>
+          </figure>
+        </div>
+
+        <div class="drive-frame" id="driveFrame">
+          <canvas id="driveCanvas"></canvas>
+
+          <div class="eyelid eyelid-top" aria-hidden="true"></div>
+          <div class="eyelid eyelid-bottom" aria-hidden="true"></div>
+
+          <div class="drive-hud" aria-hidden="true">
+            <div class="hud-row">
+              <div class="hud-item"><span>주행 시간</span><b id="hudTime">0.0초</b></div>
+              <div class="hud-item"><span>속도</span><b id="hudSpeed">-</b></div>
+              <div class="hud-item"><span>눈 감긴 횟수</span><b id="hudClosures">0</b></div>
+              <div class="hud-item hud-danger"><span>눈 감고 달린 거리</span><b id="hudBlind">0 m</b></div>
+            </div>
+            <div class="lane-gauge">
+              <div class="lane-gauge-track"><i id="laneMarker"></i></div>
+              <span id="laneLabel">차선 중앙</span>
+            </div>
+          </div>
+
+          <div class="drive-overlay" id="driveOverlay">
+            <div class="overlay-card">
+              <p class="overlay-eyebrow" id="overlayEyebrow">준비</p>
+              <h3 id="overlayTitle">수면시간을 정하고 적용을 누르세요</h3>
+              <p id="overlayBody">
+                ← → 방향키로 도로 중앙을 유지합니다. 눈이 감기는 동안에는 화면이 꺼지고 조작이 먹지 않습니다.
+              </p>
+              <dl class="overlay-stats" id="overlayStats" hidden>
+                <div><dt>버틴 시간</dt><dd id="statTime">-</dd></div>
+                <div><dt>눈이 감긴 횟수</dt><dd id="statClosures">-</dd></div>
+                <div><dt>눈 감고 달린 거리</dt><dd id="statBlind">-</dd></div>
+                <div><dt>사고 원인</dt><dd id="statReason">-</dd></div>
+              </dl>
+              <button id="overlayButton" type="button">적용하고 출발</button>
+              <small id="applyHint">슬라이더를 옮긴 뒤 적용을 누르면 주행이 시작됩니다.</small>
+            </div>
+          </div>
+
+          <div class="touch-controls" aria-hidden="true">
+            <button id="steerLeft" type="button">◀</button>
+            <button id="steerRight" type="button">▶</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="insight-grid" aria-label="핵심 설명">
+        <article>
+          <span class="metric">01</span>
+          <h3>느려지는 게 아니라 사라진다</h3>
+          <p>
+            음주운전은 반응이 늦는 상태입니다. 졸음운전은 그 몇 초 동안 반응 자체가 없습니다.
+            브레이크도, 핸들 조작도 일어나지 않습니다.
+          </p>
+        </article>
+        <article>
+          <span class="metric">02</span>
+          <h3>눈 감은 4초</h3>
+          <p id="distanceNote">
+            눈이 4초 감기면 그만큼의 거리를 아무도 운전하지 않는 상태로 달립니다.
+          </p>
+        </article>
+        <article>
+          <span class="metric">03</span>
+          <h3>본인은 모른다</h3>
+          <p>
+            미세수면은 스스로 감지되지 않습니다. 졸렸다는 자각 없이 눈이 감기기 때문에
+            "괜찮다"는 판단 자체를 믿을 수 없게 됩니다.
+          </p>
+        </article>
+      </section>
+
+      <p class="back-link"><a href="../home/">← 목록으로</a></p>
+    </main>
+
+    <script src="../microsleep.js"></script>
+  </body>
+</html>
