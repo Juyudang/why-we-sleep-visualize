@@ -104,12 +104,13 @@ a.site-nav-link:hover {
   gap: 18px;
 }
 
+/* 화면 높이에 맞추지 않고 콘텐츠 높이를 그대로 쓴다.
+   min-height + align-content:center 조합은 위아래로 죽은 공간을 만든다. */
 .home-hero {
-  min-height: 54vh;
   display: grid;
-  align-content: center;
   justify-items: start;
   gap: 18px;
+  padding: 40px 0 10px;
 }
 
 .home-hero h1 {
@@ -1106,7 +1107,7 @@ button + button {
   }
 
   .home-hero {
-    min-height: 46vh;
+    padding: 28px 0 6px;
   }
 
   .scroll-cue svg {
