@@ -31,7 +31,72 @@ body {
 .app-shell {
   width: min(1180px, calc(100% - 32px));
   margin: 0 auto;
-  padding: 32px 0 40px;
+  padding: 24px 0 40px;
+}
+
+/* ── 공통 헤더 (nav.js가 모든 페이지에 주입) ─────────────── */
+
+.site-nav {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  border-bottom: 1px solid var(--line);
+  background: rgb(246 248 247 / 0.88);
+  backdrop-filter: blur(8px);
+}
+
+.site-nav-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  width: min(1180px, calc(100% - 32px));
+  min-height: 52px;
+  margin: 0 auto;
+}
+
+.site-nav-brand {
+  flex: 0 0 auto;
+  color: var(--ink);
+  font-size: 0.82rem;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  text-decoration: none;
+  text-transform: uppercase;
+}
+
+.site-nav-links {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.site-nav-links::-webkit-scrollbar {
+  display: none;
+}
+
+.site-nav-link {
+  flex: 0 0 auto;
+  border-radius: 999px;
+  padding: 6px 12px;
+  color: var(--muted);
+  font-size: 0.86rem;
+  font-weight: 800;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+a.site-nav-link:hover {
+  background: rgb(36 95 196 / 0.08);
+  color: var(--pressure);
+}
+
+.site-nav-link.is-current {
+  background: var(--ink);
+  color: #fff;
 }
 
 .home-shell {
@@ -39,12 +104,13 @@ body {
   gap: 18px;
 }
 
+/* 화면 높이에 맞추지 않고 콘텐츠 높이를 그대로 쓴다.
+   min-height + align-content:center 조합은 위아래로 죽은 공간을 만든다. */
 .home-hero {
-  min-height: 58vh;
   display: grid;
-  align-content: center;
   justify-items: start;
   gap: 18px;
+  padding: 40px 0 10px;
 }
 
 .home-hero h1 {
@@ -59,18 +125,105 @@ body {
   word-break: keep-all;
 }
 
-.primary-link {
-  display: inline-flex;
-  align-items: center;
-  min-height: 46px;
-  border: 1px solid var(--ink);
+/* 히어로에서 아래 카드로 시선을 내리는 손그림 화살표 */
+.scroll-cue {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+  margin-top: 4px;
+  color: var(--caffeine);
+}
+
+.scroll-cue svg {
+  width: 56px;
+  height: 74px;
+  flex: 0 0 auto;
+}
+
+.scroll-cue span {
+  padding-bottom: 10px;
+  font-size: 0.92rem;
+  font-weight: 800;
+}
+
+/* ── 홈 시각화 카드 ───────────────────────────────────────
+   .insight-grid는 sim 페이지의 "핵심 설명"과 공유하므로
+   홈 목록은 별도 클래스로 둔다. 섞으면 설명 카드까지 클릭 가능해 보인다. */
+
+.viz-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.viz-card {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--line);
   border-radius: 8px;
-  padding: 0 18px;
-  background: var(--ink);
-  color: #fff;
-  font-size: 0.95rem;
-  font-weight: 900;
+  padding: 18px;
+  background: var(--surface);
+  color: inherit;
   text-decoration: none;
+}
+
+a.viz-card {
+  transition:
+    transform 0.14s ease,
+    box-shadow 0.14s ease,
+    border-color 0.14s ease;
+}
+
+a.viz-card:hover {
+  border-color: var(--pressure);
+  box-shadow: 0 14px 34px rgb(41 51 61 / 0.13);
+  transform: translateY(-3px);
+}
+
+a.viz-card:focus-visible {
+  outline: 2px solid var(--pressure);
+  outline-offset: 3px;
+}
+
+.viz-card .metric {
+  display: block;
+  margin-bottom: 18px;
+  color: var(--pressure);
+  font-weight: 900;
+}
+
+.viz-card h3 {
+  margin-bottom: 8px;
+  font-size: 1.02rem;
+}
+
+.viz-card p {
+  color: var(--muted);
+  line-height: 1.58;
+  word-break: keep-all;
+}
+
+.viz-card-go {
+  margin-top: 14px;
+  color: var(--pressure);
+  font-size: 0.88rem;
+  font-weight: 900;
+}
+
+a.viz-card:hover .viz-card-go {
+  text-decoration: underline;
+}
+
+/* 아직 만들지 않은 시각화 */
+.viz-card.is-soon {
+  border-style: dashed;
+  background: #eef1f3;
+  cursor: default;
+  opacity: 0.6;
+}
+
+.viz-card.is-soon .metric {
+  color: var(--muted);
 }
 
 .topbar {
@@ -858,17 +1011,6 @@ button + button {
   fill: var(--caffeine);
 }
 
-.back-link {
-  margin-top: 18px;
-}
-
-.back-link a {
-  color: var(--muted);
-  font-size: 0.9rem;
-  font-weight: 800;
-  text-decoration: none;
-}
-
 @media (max-width: 900px) {
   .drive-controls {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -955,17 +1097,22 @@ button + button {
     height: 360px;
   }
 
-  .insight-grid {
+  .insight-grid,
+  .viz-grid {
     grid-template-columns: 1fr;
+  }
+
+  .site-nav-inner {
+    width: min(100% - 20px, 1180px);
+  }
+
+  .home-hero {
+    padding: 28px 0 6px;
+  }
+
+  .scroll-cue svg {
+    width: 44px;
+    height: 58px;
   }
 }
 
-.insight-grid h3 a {
-  color: inherit;
-  text-decoration: none;
-  border-bottom: 2px solid var(--line);
-}
-
-.insight-grid h3 a:hover {
-  border-bottom-color: var(--pressure);
-}

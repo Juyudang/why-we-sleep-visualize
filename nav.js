@@ -1,0 +1,102 @@
+// 시각화 목록. 새 시각화를 추가할 때 고쳐야 할 유일한 곳이다.
+// 이 배열 하나로 모든 페이지의 상단 헤더와 홈의 카드 목록이 함께 만들어진다.
+//
+//   path  : 디렉터리 이름. 미구현이면 null
+//   ready : false면 헤더에서 빠지고 홈에서는 회색 카드로 표시된다
+const visualizations = [
+  {
+    title: "아데노신과 수면압력",
+    path: "sleep_pressure_sim",
+    ready: true,
+    description: "아데노신 누적, 하루주기, 자동수면과 강제수면을 조절하며 수면압력의 변화를 봅니다.",
+  },
+  {
+    title: "움직이는 대포",
+    path: "microsleep_sim",
+    ready: true,
+    description: "수면시간을 정하고 직접 운전해봅니다. 몇 초 동안 눈이 감기면 어떤 일이 벌어지는지 봅니다.",
+  },
+  {
+    title: "카페인의 영향",
+    path: null,
+    ready: false,
+    description: "카페인이 아데노신 신호를 가리는 장면을 다음 시각화로 확장할 예정입니다.",
+  },
+];
+
+const homePath = "home";
+
+function el(tag, attributes = {}, children = []) {
+  const node = document.createElement(tag);
+  Object.entries(attributes).forEach(([key, value]) => {
+    if (key === "class") node.className = value;
+    else if (key === "text") node.textContent = value;
+    else node.setAttribute(key, value);
+  });
+  (Array.isArray(children) ? children : [children]).forEach((child) => node.appendChild(child));
+  return node;
+}
+
+// 지금 보고 있는 페이지의 디렉터리 이름.
+// GitHub Pages처럼 하위 경로로 서빙돼도 마지막 디렉터리만 보므로 안전하다.
+function currentDirectory() {
+  const parts = location.pathname.split("/").filter(Boolean);
+  const last = parts[parts.length - 1];
+  if (last === undefined) return "";
+  return last.endsWith(".html") ? (parts[parts.length - 2] ?? "") : last;
+}
+
+// 모든 페이지가 한 단계 깊이에 있으므로 이웃 디렉터리는 항상 ../ 로 간다.
+function linkTo(directory) {
+  return `../${directory}/`;
+}
+
+function renderHeader(here) {
+  const brand =
+    here === homePath
+      ? el("span", { class: "site-nav-brand", text: "Visual Notes", "aria-current": "page" })
+      : el("a", { class: "site-nav-brand", href: linkTo(homePath), text: "Visual Notes" });
+
+  const links = visualizations
+    .filter((item) => item.ready)
+    .map((item) =>
+      item.path === here
+        ? el("span", { class: "site-nav-link is-current", text: item.title, "aria-current": "page" })
+        : el("a", { class: "site-nav-link", href: linkTo(item.path), text: item.title }),
+    );
+
+  const header = el("header", { class: "site-nav" }, [
+    el("div", { class: "site-nav-inner" }, [brand, el("nav", { class: "site-nav-links", "aria-label": "시각화 목록" }, links)]),
+  ]);
+
+  document.body.insertAdjacentElement("afterbegin", header);
+}
+
+// 홈에서만 동작한다. 구현된 것은 카드 전체가 링크, 미구현은 회색 카드.
+function renderHomeCards() {
+  const target = document.querySelector("#vizList");
+  if (target === null) return;
+
+  let readyCount = 0;
+  const cards = visualizations.map((item) => {
+    const badge = item.ready ? String(++readyCount).padStart(2, "0") : "Soon";
+    const body = [
+      el("span", { class: "metric", text: badge }),
+      el("h3", { text: item.title }),
+      el("p", { text: item.description }),
+    ];
+
+    if (!item.ready) {
+      return el("div", { class: "viz-card is-soon" }, body);
+    }
+
+    body.push(el("span", { class: "viz-card-go", text: "열어보기 →" }));
+    return el("a", { class: "viz-card", href: linkTo(item.path) }, body);
+  });
+
+  target.replaceChildren(...cards);
+}
+
+const here = currentDirectory();
+renderHeader(here);
+renderHomeCards();
