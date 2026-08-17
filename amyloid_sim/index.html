@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Why We Sleep Visual Notes</title>
+    <link rel="stylesheet" href="../styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="topbar" aria-labelledby="page-title">
+        <div>
+          <p class="eyebrow">Visual Note 03</p>
+          <h1 id="page-title">밤사이 뇌 청소</h1>
+        </div>
+        <div class="chapter-pill">Chapter: Amyloid Clearance</div>
+      </section>
+
+      <section class="visual-stage" aria-label="수면과 아밀로이드 시뮬레이터">
+        <div class="chart-header">
+          <div>
+            <h2>깨어 있으면 쌓이고, 자면 빠진다</h2>
+            <p>
+              아밀로이드는 <b>얼마나 치우느냐</b>만으로 정해지지 않습니다. 깨어 있는 동안에는 만들어지는 양도 함께 늘어납니다.
+              그래서 화면에는 생성과 제거를 나란히 두었습니다. 깊은 잠(N3)에서 생성이 줄고 제거가 늘어 두 값의 차이가 가장 커집니다.
+            </p>
+          </div>
+          <div class="legend" aria-label="그래프 범례">
+            <span><i class="swatch swatch-production"></i>생성</span>
+            <span><i class="swatch swatch-clearance"></i>제거</span>
+            <span><i class="swatch swatch-amyloid"></i>용해성 Aβ</span>
+            <span><i class="swatch swatch-plaque"></i>응집·침착</span>
+          </div>
+        </div>
+
+        <div class="control-panel amyloid-controls" aria-label="시뮬레이션 조절">
+          <label>
+            <span>총 수면시간 <b id="sleepHoursValue"></b></span>
+            <input id="sleepHours" type="range" min="2" max="10" step="0.25" value="8" />
+          </label>
+          <label>
+            <span>수면 안정도 <b id="disruptionValue"></b></span>
+            <input id="disruption" type="range" min="0" max="3" step="1" value="0" />
+          </label>
+          <label>
+            <span>재생 속도 <b id="speedValue"></b></span>
+            <input id="speed" type="range" min="0.5" max="3" step="0.1" value="1" />
+          </label>
+          <label class="toggle-card">
+            <span>7일 반복 <b id="repeatValue"></b></span>
+            <input id="repeatDays" type="checkbox" />
+          </label>
+          <div class="sleep-controls">
+            <div class="drag-help">
+              재생을 누르면 왼쪽 뇌 단면의 색이 실시간으로 달아올랐다 식습니다. 파랑이 낮고 빨강·분홍이 높은 상태입니다.
+              <em>수면 안정도</em>를 올리면 총 수면시간은 그대로인데 깊은 잠(N3)만 잘려나갑니다.
+              오래 자도 N3가 없으면 Aβ가 잘 빠지지 않는 것을 A·C 패널에서 함께 확인할 수 있습니다.
+              그래프 위를 끌면 원하는 시각으로 바로 이동합니다.
+              <b id="statusValue"></b>
+            </div>
+            <div class="button-row">
+              <button id="playToggle" type="button">재생</button>
+              <button id="restart" type="button">처음부터</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="amyloid-stage">
+          <div class="brain-frame">
+            <canvas id="brainCanvas" width="520" height="650" role="img" aria-label="뇌 단면의 아밀로이드 축적 상태"></canvas>
+            <div class="pet-scale" aria-hidden="true">
+              <span>낮음</span>
+              <i></i>
+              <span>높음</span>
+            </div>
+            <dl class="brain-readout">
+              <div>
+                <dt>시각</dt>
+                <dd id="clockValue">—</dd>
+              </div>
+              <div>
+                <dt>수면 단계</dt>
+                <dd id="stageValue">—</dd>
+              </div>
+              <div>
+                <dt>용해성 Aβ</dt>
+                <dd id="amyloidValue">—</dd>
+              </div>
+              <div>
+                <dt>응집·침착</dt>
+                <dd id="plaqueValue">—</dd>
+              </div>
+              <div class="brain-readout-wide">
+                <dt>여기까지 잔 깊은 잠(N3)</dt>
+                <dd id="deepSleepValue">—</dd>
+              </div>
+            </dl>
+          </div>
+
+          <div class="chart-frame">
+            <svg id="amyloidChart" role="img" aria-label="수면 단계, 생성과 제거, 아밀로이드 농도 그래프"></svg>
+          </div>
+        </div>
+
+        <p class="model-note">
+          기존 수면–아밀로이드 연구의 경향을 기반으로 한 개념 모델입니다.
+          단계별 수치는 실제 사람에서 측정된 Aβ 제거율이 아니라 시각화를 위한 상대적 가정값입니다.
+          <span>참고: Xie et al., <i>Science</i> 2013 / Ju et al., <i>Brain</i> 2017 / Lucey et al., <i>Ann Neurol</i> 2018</span>
+        </p>
+      </section>
+
+      <section class="insight-grid" aria-label="핵심 설명">
+        <article>
+          <span class="metric">01</span>
+          <h3>생성과 제거는 따로 움직인다</h3>
+          <p>
+            밤을 새우면 Aβ가 느는 이유를 "청소를 못 해서"로만 설명하면 부정확합니다.
+            깨어 있는 동안 생성이 늘어나는 몫도 함께 큽니다. 두 번째 패널의 주황 선과 청록 선의 간격이 그 몫입니다.
+          </p>
+        </article>
+        <article>
+          <span class="metric">02</span>
+          <h3>깊은 잠이 가장 유리하다</h3>
+          <p>
+            제거에 유리한 정도는 N3 &gt; N2 &gt; N1·REM &gt; 각성 순으로 봅니다.
+            밤 초반에 N3가 몰려 있어 Aβ가 가장 가파르게 떨어지고, REM이 길어지는 후반에는 기울기가 완만해집니다.
+          </p>
+        </article>
+        <article>
+          <span class="metric">03</span>
+          <h3>길이보다 깊이</h3>
+          <p>
+            수면 안정도를 올리면 총 수면시간은 그대로인데 N3만 잘려나갑니다.
+            8시간을 자도 교란 3단계면 깊은 잠이 거의 없어 Aβ가 잘 빠지지 않습니다.
+            낮에 오르는 것은 용해성 Aβ 농도이지 플라크 자체가 아니며, D 패널의 누적분만 되돌아가지 않습니다.
+          </p>
+        </article>
+      </section>
+    </main>
+
+    <script src="../nav.js"></script>
+    <script src="../shared.js"></script>
+    <script src="../amyloid.js"></script>
+  </body>
+</html>

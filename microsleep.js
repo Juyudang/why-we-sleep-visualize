@@ -42,7 +42,6 @@ const overlay = {
   button: document.querySelector("#overlayButton"),
 };
 
-const ns = "http://www.w3.org/2000/svg";
 
 // 위험도는 로그 곡선 하나로만 정한다.
 //   severity(h) = ln(safe / h) / ln(safe / peak)
@@ -137,10 +136,6 @@ const drive = {
   traffic: [],
 };
 
-function clamp(value, min, max) {
-  return Math.min(max, Math.max(min, value));
-}
-
 function severity(hours) {
   if (hours >= risk.safeHours) return 0;
   return clamp(Math.log(risk.safeHours / hours) / Math.log(risk.safeHours / risk.peakHours), 0, 1);
@@ -153,19 +148,6 @@ function riskFor(hours) {
     probability: level,
     closeSeconds: risk.minCloseSeconds + (risk.maxCloseSeconds - risk.minCloseSeconds) * level,
   };
-}
-
-function create(tag, attributes = {}, text = "") {
-  const node = document.createElementNS(ns, tag);
-  Object.entries(attributes).forEach(([key, value]) => node.setAttribute(key, value));
-  if (text) node.textContent = text;
-  return node;
-}
-
-function formatHours(hours) {
-  const whole = Math.floor(hours);
-  const minutes = Math.round((hours - whole) * 60);
-  return minutes === 0 ? `${whole}시간` : `${whole}시간 ${minutes}분`;
 }
 
 function meanTimeToClosure(probability) {
