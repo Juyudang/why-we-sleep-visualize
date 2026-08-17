@@ -17,6 +17,12 @@ const visualizations = [
     description: "수면시간을 정하고 직접 운전해봅니다. 몇 초 동안 눈이 감기면 어떤 일이 벌어지는지 봅니다.",
   },
   {
+    title: "밤사이 뇌 청소",
+    path: "amyloid_sim",
+    ready: true,
+    description: "자는 동안 뇌에 쌓인 아밀로이드가 어떻게 줄어드는지, 수면 단계마다 속도가 어떻게 달라지는지 봅니다.",
+  },
+  {
     title: "카페인의 영향",
     path: null,
     ready: false,

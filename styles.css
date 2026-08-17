@@ -12,6 +12,9 @@
   --sleep: #f2dfc8;
   --forced-sleep: #eecb9e;
   --wake: #fff8e8;
+  --amyloid: #4a5b8c;
+  --plaque: #8c5a3c;
+  --clearance: #1f8ba8;
 }
 
 * {
@@ -1189,3 +1192,295 @@ button + button {
   }
 }
 
+
+/* ── 밤사이 뇌 청소 (amyloid_sim) ────────────────────────── */
+
+.swatch-production {
+  background: var(--caffeine);
+}
+
+.swatch-clearance {
+  background: var(--clearance);
+}
+
+.swatch-amyloid {
+  background: var(--amyloid);
+}
+
+.swatch-plaque {
+  background: var(--plaque);
+}
+
+.amyloid-stage {
+  display: grid;
+  grid-template-columns: 320px minmax(0, 1fr);
+  gap: 18px;
+  align-items: start;
+}
+
+.brain-frame {
+  display: grid;
+  gap: 12px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 12px;
+  background: var(--surface);
+}
+
+.brain-frame canvas {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.brain-readout {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px 12px;
+  margin: 0;
+}
+
+.brain-readout dt {
+  color: var(--muted);
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+}
+
+.brain-readout dd {
+  margin: 2px 0 0;
+  font-size: 0.98rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.model-note {
+  margin: 16px 0 0;
+  border-left: 3px solid var(--line);
+  padding-left: 12px;
+  color: var(--muted);
+  font-size: 0.82rem;
+  line-height: 1.6;
+}
+
+.model-note span {
+  display: block;
+  margin-top: 4px;
+  font-size: 0.76rem;
+}
+
+/* SVG 안쪽 */
+
+.amyloid-sleep-band {
+  fill: rgb(74 91 140 / 0.06);
+}
+
+.amyloid-grid {
+  stroke: var(--line);
+  stroke-width: 1;
+  stroke-dasharray: 2 5;
+}
+
+.amyloid-axis-tick,
+.amyloid-row-label {
+  fill: var(--muted);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.amyloid-axis-tick {
+  text-anchor: middle;
+}
+
+.amyloid-row-label {
+  text-anchor: end;
+}
+
+.amyloid-panel-title {
+  fill: var(--ink);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+/* 단계 행은 깊어질수록 진해진다 (참고 hypnogram의 띠 배경) */
+.amyloid-stage-row {
+  fill: rgb(24 32 42 / 0.03);
+}
+
+.amyloid-stage-row.row-rem {
+  fill: rgb(134 87 201 / 0.09);
+}
+
+.amyloid-stage-row.row-n2 {
+  fill: rgb(24 32 42 / 0.06);
+}
+
+.amyloid-stage-row.row-n3 {
+  fill: rgb(24 32 42 / 0.1);
+}
+
+.amyloid-hypnogram-line {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 1.6;
+  stroke-linejoin: round;
+}
+
+.amyloid-rem-bar {
+  stroke: var(--circadian);
+  stroke-width: 5;
+  stroke-linecap: round;
+}
+
+.amyloid-band.band-clear {
+  fill: rgb(31 139 168 / 0.18);
+}
+
+.amyloid-band.band-build {
+  fill: rgb(201 130 43 / 0.16);
+}
+
+.amyloid-production {
+  fill: none;
+  stroke: var(--caffeine);
+  stroke-width: 2;
+}
+
+.amyloid-clearance {
+  fill: none;
+  stroke: var(--clearance);
+  stroke-width: 2;
+}
+
+.amyloid-threshold {
+  stroke: var(--plaque);
+  stroke-width: 1;
+  stroke-dasharray: 5 4;
+  opacity: 0.7;
+}
+
+.amyloid-threshold-label {
+  fill: var(--plaque);
+  font-size: 10px;
+  font-weight: 700;
+  text-anchor: end;
+}
+
+.amyloid-level-fill {
+  fill: rgb(74 91 140 / 0.14);
+}
+
+.amyloid-level-line {
+  fill: none;
+  stroke: var(--amyloid);
+  stroke-width: 2.2;
+}
+
+.amyloid-plaque-fill {
+  fill: rgb(140 90 60 / 0.22);
+}
+
+.amyloid-plaque-line {
+  fill: none;
+  stroke: var(--plaque);
+  stroke-width: 1.8;
+}
+
+.amyloid-playhead {
+  stroke: var(--ink);
+  stroke-width: 1.2;
+  opacity: 0.55;
+}
+
+.amyloid-playhead-dot {
+  fill: var(--amyloid);
+  stroke: var(--surface);
+  stroke-width: 2;
+}
+
+@media (max-width: 900px) {
+  .amyloid-stage {
+    grid-template-columns: 1fr;
+  }
+
+  .brain-frame {
+    max-width: 420px;
+  }
+}
+
+#amyloidChart {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.amyloid-stage .chart-frame {
+  min-height: 0;
+  padding: 8px 6px;
+}
+
+/* .drag-help b는 카운터용 블록이라, 문장 안에서 강조할 때는 em을 쓴다 */
+.drag-help em {
+  color: var(--ink);
+  font-style: normal;
+  font-weight: 900;
+}
+
+.amyloid-controls .button-row {
+  align-items: center;
+}
+
+.amyloid-controls .button-row button {
+  min-height: 44px;
+}
+
+/* PET 단면 캔버스는 배경이 검정이라 프레임도 어둡게 받쳐준다 */
+.brain-frame canvas {
+  border-radius: 10px;
+  background: #05040f;
+}
+
+.pet-scale {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 800;
+}
+
+.pet-scale i {
+  flex: 1;
+  height: 8px;
+  border-radius: 999px;
+  background: linear-gradient(
+    90deg,
+    #05040f 0%,
+    #28105c 14%,
+    #3a289c 30%,
+    #2a5cbe 44%,
+    #1e965c 58%,
+    #96be28 70%,
+    #e2d228 80%,
+    #e8781c 89%,
+    #d6202c 96%,
+    #f26ed0 100%
+  );
+}
+
+.brain-readout-wide {
+  grid-column: span 2;
+  border-top: 1px solid var(--line);
+  padding-top: 8px;
+}
+
+.amyloid-n3-bar {
+  stroke: var(--amyloid);
+  stroke-width: 5;
+  stroke-linecap: round;
+}
+
+#amyloidChart {
+  cursor: ew-resize;
+  touch-action: none;
+}
