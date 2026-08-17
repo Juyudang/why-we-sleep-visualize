@@ -17,6 +17,13 @@ const sources = {
 // melanopic만 크게 떨어지고 lux는 조금만 준다 — "야간 모드면 괜찮다"는 오해를 막는 지점이다.
 const nightShift = { melanopic: 0.42, luxScale: 0.88 };
 
+// 커튼 종류. blocks는 창밖 빛을 막아내는 비율이다.
+// 커튼을 치는 것과 암막으로 바꾸는 것이 다른 일이라는 점이 여기서 드러난다.
+const curtains = {
+  sheer: { label: "일반 커튼", blocks: 0.62 },
+  blackout: { label: "암막 커튼", blocks: 1 },
+};
+
 // 억제 곡선. suppression = max · dose^n / (dose^n + half^n)
 // half를 60으로 잡으면 아이패드 단독 2시간이 약 25% 억제로 나와 책이 인용한 23%와 맞는다.
 // 거실 조명을 다 켠 상태(약 140)는 66% 억제까지 올라간다.
@@ -56,7 +63,8 @@ const outcome = {
 const room = { fullLux: 200, exponent: 0.45, maxShade: 0.9 };
 
 // 종이책을 읽으려면 최소한 이 정도는 밝아야 한다는 기준. 상태 문구에만 쓴다.
-const readingLux = 12;
+// 무드등 하나(roomLux 8)는 읽을 수 있는 쪽에 둔다 — 그 아래를 권하는 문구와 어긋나면 안 된다.
+const readingLux = 7;
 
 // ── 차트 배치 ─────────────────────────────────────────────
 // 글자 크기는 viewBox 단위라 폭이 900인 채로 휴대폰에 들어가면 4px로 줄어 못 읽는다.
@@ -92,6 +100,7 @@ const controls = {
   exposure: document.querySelector("#exposure"),
   brightness: document.querySelector("#brightness"),
   nightShift: document.querySelector("#nightShift"),
+  blackout: document.querySelector("#blackout"),
   repeatNights: document.querySelector("#repeatNights"),
   allOff: document.querySelector("#allOff"),
   reset: document.querySelector("#reset"),
@@ -101,6 +110,7 @@ const readouts = {
   exposure: document.querySelector("#exposureValue"),
   brightness: document.querySelector("#brightnessValue"),
   nightShift: document.querySelector("#nightShiftValue"),
+  blackout: document.querySelector("#blackoutValue"),
   repeat: document.querySelector("#repeatValue"),
   status: document.querySelector("#statusValue"),
   melatonin: document.querySelector("#melatoninValue"),
@@ -135,8 +145,21 @@ const state = { ...defaults };
 
 // ── 모델 ──────────────────────────────────────────────────
 
+// 버튼이 눌린 상태인지. 창문은 "커튼이 열려 있는지"를 뜻한다.
 function isOn(key) {
   return key === "screen" ? state.screen === "tablet" : state[key];
+}
+
+// 그 광원이 실제로 내보내는 몫(0~1). 창문만 0과 1 사이에 설 수 있다.
+// 일반 커튼은 쳐도 빛이 배어 들어오기 때문이다.
+function levelOf(key) {
+  if (key !== "window") return isOn(key) ? 1 : 0;
+  if (state.window) return 1;
+  return 1 - curtains[curtainKind()].blocks;
+}
+
+function curtainKind() {
+  return controls.blackout.checked ? "blackout" : "sheer";
 }
 
 // 화면은 밝기 슬라이더와 야간 모드가 걸려 있어 다른 광원과 값이 다르게 나온다.
@@ -157,13 +180,13 @@ function specOf(key) {
 function contributions() {
   return Object.keys(sources).map((key) => {
     const spec = specOf(key);
-    const on = isOn(key);
+    const level = levelOf(key);
     return {
       key,
       label: spec.label,
-      medi: on ? spec.lux * spec.melanopic : 0,
-      roomLux: on ? spec.roomLux : 0,
-      on,
+      medi: spec.lux * spec.melanopic * level,
+      roomLux: spec.roomLux * level,
+      on: isOn(key),
     };
   });
 }
@@ -226,7 +249,9 @@ function renderScene(result) {
   scene.dataset.lamp = state.lamp ? "on" : "off";
   scene.dataset.mood = state.mood ? "on" : "off";
   scene.dataset.curtain = state.window ? "open" : "closed";
+  scene.dataset.curtainKind = curtainKind();
   scene.dataset.screen = state.screen;
+  scene.dataset.nightShift = controls.nightShift.checked ? "on" : "off";
 
   const lit = clamp(result.roomLux / room.fullLux, 0, 1);
   shade.setAttribute("opacity", ((1 - Math.pow(lit, room.exponent)) * room.maxShade).toFixed(3));
@@ -238,8 +263,11 @@ function renderScene(result) {
 // ── 오른쪽 패널 ───────────────────────────────────────────
 
 function stateLabel(key) {
-  if (key === "screen") return state.screen === "tablet" ? "보는 중" : "종이책";
-  if (key === "window") return state.window ? "커튼 열림" : "커튼 닫힘";
+  if (key === "screen") {
+    if (state.screen === "book") return "종이책";
+    return controls.nightShift.checked ? "야간 모드" : "보는 중";
+  }
+  if (key === "window") return state.window ? "커튼 열림" : curtains[curtainKind()].label;
   return state[key] ? "켜짐" : "꺼짐";
 }
 
@@ -248,6 +276,7 @@ function renderPanel(result) {
   readouts.brightness.textContent =
     state.screen === "tablet" ? `${controls.brightness.value}%` : "종이책";
   readouts.nightShift.textContent = controls.nightShift.checked ? "켬" : "끔";
+  readouts.blackout.textContent = curtains[curtainKind()].label;
   readouts.repeat.textContent = controls.repeatNights.checked ? "반복" : "하룻밤";
 
   readouts.melatonin.textContent = `${Math.round(result.release * 100)}%`;
@@ -273,6 +302,10 @@ function renderPanel(result) {
   readouts.status.textContent = statusFor(result);
 }
 
+function windowShare(result) {
+  return result.parts.find((part) => part.key === "window").medi;
+}
+
 function statusFor(result) {
   // 디지털 숙취는 매일 밤 빛을 봤을 때 남는 몫이라, 이미 어두운 방에서는 붙이지 않는다.
   const hangoverNote =
@@ -282,6 +315,10 @@ function statusFor(result) {
 
   if (state.screen === "book" && result.roomLux < readingLux) {
     return "종이책을 읽기엔 너무 어둡습니다. 무드등 정도면 읽으면서도 멜라토닌을 거의 지킬 수 있습니다.";
+  }
+  // 거의 다 껐는데 창문이 아직 남아 있는 상태. 마지막 한 걸음을 짚어준다.
+  if (!state.window && curtainKind() === "sheer" && windowShare(result) > 0 && result.medi < 20) {
+    return "커튼은 쳤지만 일반 커튼이라 빛이 배어 들어옵니다. 암막 커튼으로 바꿔보세요.";
   }
   if (result.medi < 3) return "거의 완전한 어둠입니다. 멜라토닌이 제 시각에 그대로 나옵니다.";
   if (result.medi < 20) return "무드등 수준입니다. 방은 어둡지만 생활은 되는 구간입니다.";
@@ -456,12 +493,14 @@ hotspots.forEach((hotspot) => {
 
 sourceRows.forEach((row, key) => row.button.addEventListener("click", () => toggle(key)));
 
-[controls.exposure, controls.brightness, controls.nightShift, controls.repeatNights].forEach((input) =>
-  input.addEventListener("input", update),
+[controls.exposure, controls.brightness, controls.nightShift, controls.blackout, controls.repeatNights].forEach(
+  (input) => input.addEventListener("input", update),
 );
 
+// "완전한 어둠" 프리셋이므로 커튼도 암막으로 바꾼다. 일반 커튼만 남으면 0이 되지 않는다.
 controls.allOff.addEventListener("click", () => {
   Object.assign(state, { ceiling: false, lamp: false, mood: false, window: false, screen: "book" });
+  controls.blackout.checked = true;
   update();
 });
 
@@ -478,6 +517,7 @@ controls.reset.addEventListener("click", () => {
   controls.exposure.value = "2";
   controls.brightness.value = "100";
   controls.nightShift.checked = false;
+  controls.blackout.checked = false;
   controls.repeatNights.checked = false;
   update();
 });

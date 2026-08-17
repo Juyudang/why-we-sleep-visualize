@@ -1543,6 +1543,17 @@ button + button {
 
 .tint-screen {
   fill: var(--light-screen);
+  transition: fill 0.3s ease;
+}
+
+/* 야간 모드는 화면에서 청색을 빼는 기능이라 화면도 누리끼리해진다.
+   빛나는 면과 번지는 빛, 얼굴에 비치는 몫이 함께 바뀌어야 어색하지 않다. */
+.room-scene[data-night-shift="on"] .tint-screen {
+  fill: var(--light-warm);
+}
+
+.room-scene[data-night-shift="on"] .stop-screen {
+  stop-color: var(--light-warm);
 }
 
 .stop-cool {
@@ -1587,6 +1598,12 @@ button + button {
   opacity: 0;
 }
 
+/* 일반 커튼은 다 막지 못한다. 창을 살짝 비쳐 보이게 두면
+   어두운 천 위로 빛이 배어 나오는 것처럼 읽힌다. */
+.room-scene[data-curtain="closed"][data-curtain-kind="sheer"] .source-window {
+  opacity: 0.34;
+}
+
 .paper-book {
   opacity: 0;
 }
@@ -1599,6 +1616,26 @@ button + button {
 .curtain {
   transform-box: view-box;
   transition: transform 0.45s ease;
+}
+
+.curtain-cloth {
+  fill: #2f3547;
+  transition: fill 0.3s ease;
+}
+
+.curtain-fold {
+  stroke: #232838;
+  stroke-width: 2;
+  transition: stroke 0.3s ease;
+}
+
+/* 일반 커튼은 얇고 밝은 천이다 */
+.room-scene[data-curtain-kind="sheer"] .curtain-cloth {
+  fill: #7d859c;
+}
+
+.room-scene[data-curtain-kind="sheer"] .curtain-fold {
+  stroke: #6a7188;
 }
 
 .curtain-left {
@@ -1856,6 +1893,16 @@ button + button {
   font-variant-numeric: tabular-nums;
 }
 
+/* 조절 항목이 다섯 개라 기본 4열 대신 5열을 쓴다.
+   .sleep-controls의 span은 열 수를 따라가야 하므로 중단점마다 같이 바꾼다. */
+.light-controls {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+
+.light-controls .sleep-controls {
+  grid-column: span 5;
+}
+
 .light-controls .button-row button {
   min-height: 44px;
 }
@@ -1964,8 +2011,28 @@ button + button {
   fill: #8e99a5;
 }
 
+@media (max-width: 1040px) {
+  .light-controls {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .light-controls .sleep-controls {
+    grid-column: span 2;
+  }
+}
+
 @media (max-width: 900px) {
   .light-stage {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 760px) {
+  .light-controls {
+    grid-template-columns: 1fr;
+  }
+
+  .light-controls .sleep-controls {
+    grid-column: span 1;
   }
 }

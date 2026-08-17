@@ -48,13 +48,18 @@
             <input id="nightShift" type="checkbox" />
           </label>
           <label class="toggle-card">
+            <span>암막 커튼 <b id="blackoutValue"></b></span>
+            <input id="blackout" type="checkbox" />
+          </label>
+          <label class="toggle-card">
             <span>5일 연속 반복 <b id="repeatValue"></b></span>
             <input id="repeatNights" type="checkbox" />
           </label>
           <div class="sleep-controls">
             <div class="drag-help">
-              장면 속 불빛을 클릭하면 꺼지고, 창문을 클릭하면 <em>암막 커튼</em>이 쳐집니다.
+              장면 속 불빛을 클릭하면 꺼지고, 창문을 클릭하면 커튼이 쳐집니다.
               아이패드를 클릭하면 <em>종이책</em>으로 바뀝니다.
+              커튼은 기본이 일반 커튼이라 쳐도 빛이 배어 들어옵니다. 위의 <em>암막 커튼</em>으로 바꿔보세요.
               오른쪽 목록의 줄을 눌러도 같은 동작을 합니다.
               <b id="statusValue"></b>
             </div>
@@ -79,7 +84,9 @@
               data-lamp="on"
               data-mood="off"
               data-screen="tablet"
+              data-night-shift="off"
               data-curtain="open"
+              data-curtain-kind="sheer"
             >
               <defs>
                 <linearGradient id="wallPaint" x1="0" y1="0" x2="0" y2="1">
@@ -141,14 +148,15 @@
                 />
                 <rect x="470" y="84" width="182" height="7" rx="3" fill="#8b8073" />
 
-                <!-- 암막 커튼. 닫으면 가로로 늘어나 창을 덮는다 -->
+                <!-- 커튼. 닫으면 가로로 늘어나 창을 덮는다.
+                     천 색은 종류(일반/암막)에 따라 달라지므로 styles.css에서 칠한다 -->
                 <g class="curtain curtain-left">
-                  <rect x="470" y="91" width="24" height="172" fill="#2f3547" />
-                  <path d="M 476 91 L 476 263 M 482 91 L 482 263 M 488 91 L 488 263" stroke="#232838" stroke-width="2" />
+                  <rect class="curtain-cloth" x="470" y="91" width="24" height="172" />
+                  <path class="curtain-fold" d="M 476 91 L 476 263 M 482 91 L 482 263 M 488 91 L 488 263" />
                 </g>
                 <g class="curtain curtain-right">
-                  <rect x="626" y="91" width="24" height="172" fill="#2f3547" />
-                  <path d="M 632 91 L 632 263 M 638 91 L 638 263 M 644 91 L 644 263" stroke="#232838" stroke-width="2" />
+                  <rect class="curtain-cloth" x="626" y="91" width="24" height="172" />
+                  <path class="curtain-fold" d="M 632 91 L 632 263 M 638 91 L 638 263 M 644 91 L 644 263" />
                 </g>
 
                 <!-- 소파 -->
