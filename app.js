@@ -35,7 +35,6 @@ const totalHours = 72;
 const step = 0.1;
 const yMin = -0.45;
 let chartYMax = 1.25;
-const ns = "http://www.w3.org/2000/svg";
 const adenosineFloor = 0;
 const adenosineRiseTarget = 1.85;
 
@@ -47,10 +46,6 @@ const state = {
   clickStart: null,
   ignoreNextClick: false,
 };
-
-function clamp(value, min, max) {
-  return Math.min(max, Math.max(min, value));
-}
 
 function readSettings() {
   return {
@@ -150,13 +145,6 @@ function x(hour) {
 function y(value) {
   const normalized = (value - yMin) / (chartYMax - yMin);
   return padding.top + (1 - normalized) * plotHeight;
-}
-
-function create(tag, attributes = {}, text = "") {
-  const node = document.createElementNS(ns, tag);
-  Object.entries(attributes).forEach(([key, value]) => node.setAttribute(key, value));
-  if (text) node.textContent = text;
-  return node;
 }
 
 function pathFor(points, key) {
