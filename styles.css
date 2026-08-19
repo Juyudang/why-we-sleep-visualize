@@ -15,6 +15,12 @@
   --amyloid: #4a5b8c;
   --plaque: #8c5a3c;
   --clearance: #1f8ba8;
+  /* 빛의 색. UI 색이 아니라 "그 광원이 실제로 내는 색"이라 따로 모아 둔다 */
+  --light-cool: #cfe4ff;
+  --light-warm: #ffce85;
+  --light-amber: #ffb15c;
+  --light-screen: #a9dcff;
+  --light-outside: #9fc4ff;
 }
 
 * {
@@ -1483,4 +1489,550 @@ button + button {
 #amyloidChart {
   cursor: ew-resize;
   touch-action: none;
+}
+
+/* ── 저녁의 빛 (light_sim) ───────────────────────────────── */
+
+.swatch-melatonin {
+  background: var(--circadian);
+}
+
+.swatch-dark {
+  background: #b3bcc6;
+}
+
+.swatch-exposure {
+  background: var(--caffeine);
+}
+
+.light-stage {
+  display: grid;
+  grid-template-columns: minmax(0, 1.32fr) minmax(0, 1fr);
+  gap: 18px;
+  align-items: start;
+  margin-bottom: 16px;
+}
+
+/* 밤 장면이라 프레임까지 어둡게 받쳐야 방이 캄캄해질 때 그림이 떠 보이지 않는다 */
+.room-frame {
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 10px;
+  background: #12161f;
+  overflow: hidden;
+}
+
+.room-scene {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* 빛 색 토큰 꽂는 자리. SVG 프레젠테이션 속성에서는 var()가 안 먹어 규칙으로 뺐다 */
+.tint-cool {
+  fill: var(--light-cool);
+}
+
+.tint-warm {
+  fill: var(--light-warm);
+}
+
+.tint-amber {
+  fill: var(--light-amber);
+}
+
+.tint-screen {
+  fill: var(--light-screen);
+  transition: fill 0.3s ease;
+}
+
+/* 야간 모드는 화면에서 청색을 빼는 기능이라 화면도 누리끼리해진다.
+   빛나는 면과 번지는 빛, 얼굴에 비치는 몫이 함께 바뀌어야 어색하지 않다. */
+.room-scene[data-night-shift="on"] .tint-screen {
+  fill: var(--light-warm);
+}
+
+.room-scene[data-night-shift="on"] .stop-screen {
+  stop-color: var(--light-warm);
+}
+
+.stop-cool {
+  stop-color: var(--light-cool);
+}
+
+.stop-warm {
+  stop-color: var(--light-warm);
+}
+
+.stop-amber {
+  stop-color: var(--light-amber);
+}
+
+.stop-screen {
+  stop-color: var(--light-screen);
+}
+
+.stop-outside {
+  stop-color: var(--light-outside);
+}
+
+/* 빛줄기는 "여기가 밝다"는 힌트일 뿐이다.
+   진하게 두면 사람과 가구 위에 안개처럼 덮여 색이 다 빠져 보인다. */
+.beam {
+  opacity: 0.45;
+}
+
+#roomShade,
+.light-source,
+.face-light,
+.paper-book {
+  transition: opacity 0.35s ease;
+}
+
+.room-scene[data-ceiling="off"] .source-ceiling,
+.room-scene[data-lamp="off"] .source-lamp,
+.room-scene[data-mood="off"] .source-mood,
+.room-scene[data-screen="book"] .source-screen,
+.room-scene[data-screen="book"] .face-light,
+.room-scene[data-curtain="closed"] .source-window {
+  opacity: 0;
+}
+
+/* 일반 커튼은 다 막지 못한다. 창을 살짝 비쳐 보이게 두면
+   어두운 천 위로 빛이 배어 나오는 것처럼 읽힌다. */
+.room-scene[data-curtain="closed"][data-curtain-kind="sheer"] .source-window {
+  opacity: 0.34;
+}
+
+.paper-book {
+  opacity: 0;
+}
+
+.room-scene[data-screen="book"] .paper-book {
+  opacity: 1;
+}
+
+/* 커튼은 가로로 늘려 닫는다. 안쪽 주름선도 같이 벌어져서 실제로 펼쳐지는 것처럼 보인다 */
+.curtain {
+  transform-box: view-box;
+  transition: transform 0.45s ease;
+}
+
+.curtain-cloth {
+  fill: #2f3547;
+  transition: fill 0.3s ease;
+}
+
+.curtain-fold {
+  stroke: #232838;
+  stroke-width: 2;
+  transition: stroke 0.3s ease;
+}
+
+/* 일반 커튼은 얇고 밝은 천이다 */
+.room-scene[data-curtain-kind="sheer"] .curtain-cloth {
+  fill: #7d859c;
+}
+
+.room-scene[data-curtain-kind="sheer"] .curtain-fold {
+  stroke: #6a7188;
+}
+
+.curtain-left {
+  transform-origin: 470px 91px;
+}
+
+.curtain-right {
+  transform-origin: 650px 91px;
+}
+
+.room-scene[data-curtain="closed"] .curtain-left,
+.room-scene[data-curtain="closed"] .curtain-right {
+  transform: scaleX(3.84);
+}
+
+.light-hotspot {
+  cursor: pointer;
+}
+
+.light-hotspot:focus-visible {
+  outline: none;
+}
+
+.hotspot-hit {
+  fill: transparent;
+}
+
+.hotspot-ring {
+  fill: none;
+  stroke: #f2f6fa;
+  stroke-width: 1.5;
+  stroke-dasharray: 5 5;
+  opacity: 0;
+  transition: opacity 0.16s ease;
+}
+
+.light-hotspot:hover .hotspot-ring,
+.light-hotspot:focus-visible .hotspot-ring {
+  opacity: 0.85;
+}
+
+.pill {
+  fill: rgb(10 14 22 / 0.74);
+}
+
+.pill-text {
+  fill: #eef3f8;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.pill-dot {
+  fill: #7ee0a8;
+}
+
+.room-scene[data-ceiling="off"] .hotspot-ceiling .pill-dot,
+.room-scene[data-lamp="off"] .hotspot-lamp .pill-dot,
+.room-scene[data-mood="off"] .hotspot-mood .pill-dot,
+.room-scene[data-screen="book"] .hotspot-screen .pill-dot,
+.room-scene[data-curtain="closed"] .hotspot-window .pill-dot {
+  fill: #8b96a3;
+}
+
+.light-panel {
+  display: grid;
+  align-content: start;
+  gap: 12px;
+}
+
+.gauge {
+  display: grid;
+  gap: 8px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 14px;
+  background: #fbfcfb;
+}
+
+.gauge-label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 0.88rem;
+  font-weight: 800;
+}
+
+.gauge-label b {
+  font-size: 1.3rem;
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+}
+
+#melatoninValue {
+  color: var(--circadian);
+}
+
+#chanceValue {
+  color: var(--pressure);
+}
+
+.gauge-track {
+  height: 10px;
+  border-radius: 999px;
+  background: #e6ebef;
+  overflow: hidden;
+}
+
+.gauge-track i {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  transition: width 0.3s ease;
+}
+
+.bar-melatonin {
+  background: var(--circadian);
+}
+
+.bar-chance {
+  background: var(--pressure);
+}
+
+.gauge small {
+  color: var(--muted);
+  font-size: 0.76rem;
+  font-weight: 700;
+  line-height: 1.45;
+  word-break: keep-all;
+}
+
+.source-caption {
+  color: var(--muted);
+  font-size: 0.76rem;
+  font-weight: 800;
+}
+
+.source-list {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.source-list button {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 7px 10px;
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 10px 12px;
+  background: #fbfcfb;
+  color: var(--ink);
+  text-align: left;
+}
+
+.source-list button:hover {
+  border-color: var(--pressure);
+}
+
+.source-list button[aria-pressed="false"] {
+  opacity: 0.55;
+}
+
+.source-name {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 0.86rem;
+  font-weight: 800;
+}
+
+.source-dot {
+  flex: 0 0 auto;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 1px rgb(24 32 42 / 0.2);
+}
+
+[data-source="ceiling"] .source-dot {
+  background: var(--light-cool);
+}
+
+[data-source="lamp"] .source-dot {
+  background: var(--light-warm);
+}
+
+[data-source="screen"] .source-dot {
+  background: var(--light-screen);
+}
+
+[data-source="window"] .source-dot {
+  background: var(--light-outside);
+}
+
+[data-source="mood"] .source-dot {
+  background: var(--light-amber);
+}
+
+.source-state {
+  color: var(--muted);
+  font-size: 0.76rem;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.source-bar {
+  grid-column: 1;
+  height: 7px;
+  border-radius: 999px;
+  background: #e6ebef;
+  overflow: hidden;
+}
+
+.source-bar i {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: var(--pressure);
+  transition: width 0.3s ease;
+}
+
+.source-value {
+  grid-column: 2;
+  font-size: 0.84rem;
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+}
+
+.light-readout {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px 12px;
+  margin: 0;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 12px 14px;
+  background: #fbfcfb;
+}
+
+.light-readout dt {
+  color: var(--muted);
+  font-size: 0.74rem;
+  font-weight: 800;
+}
+
+.light-readout dd {
+  margin: 3px 0 0;
+  font-size: 0.96rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+/* 조절 항목이 다섯 개라 기본 4열 대신 5열을 쓴다.
+   .sleep-controls의 span은 열 수를 따라가야 하므로 중단점마다 같이 바꾼다. */
+.light-controls {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+
+.light-controls .sleep-controls {
+  grid-column: span 5;
+}
+
+.light-controls .button-row button {
+  min-height: 44px;
+}
+
+.light-chart-frame {
+  min-height: 0;
+  padding: 8px 6px;
+}
+
+#melatoninChart {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* SVG 안쪽 */
+
+.light-exposure-band {
+  fill: rgb(201 130 43 / 0.1);
+}
+
+.light-sleep-band {
+  fill: rgb(74 91 140 / 0.07);
+}
+
+.light-band-label {
+  fill: var(--muted);
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.light-reference-line {
+  fill: none;
+  stroke: #a8b3bf;
+  stroke-width: 2;
+  stroke-dasharray: 6 5;
+}
+
+.light-current-fill {
+  fill: rgb(134 87 201 / 0.14);
+}
+
+.light-current-line {
+  fill: none;
+  stroke: var(--circadian);
+  stroke-width: 2.6;
+  stroke-linecap: round;
+}
+
+.light-bedtime-line {
+  stroke: var(--ink);
+  stroke-width: 1.4;
+  stroke-dasharray: 5 6;
+  opacity: 0.55;
+}
+
+.light-bedtime-label {
+  fill: var(--ink);
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.light-gap-line {
+  stroke: var(--caffeine);
+  stroke-width: 2;
+}
+
+.light-gap-dot {
+  fill: var(--circadian);
+  stroke: var(--surface);
+  stroke-width: 2;
+}
+
+.light-gap-dot.is-reference {
+  fill: #a8b3bf;
+}
+
+.light-gap-label {
+  fill: var(--caffeine);
+  font-size: 11px;
+  font-weight: 900;
+  text-anchor: end;
+}
+
+.light-delay-bracket {
+  fill: none;
+  stroke: var(--caffeine);
+  stroke-width: 1.4;
+}
+
+.light-delay-label {
+  fill: var(--caffeine);
+  font-size: 11px;
+  font-weight: 800;
+  text-anchor: middle;
+}
+
+.light-curve-label {
+  fill: var(--circadian);
+  font-size: 11px;
+  font-weight: 800;
+  text-anchor: end;
+}
+
+.light-curve-label.is-reference {
+  fill: #8e99a5;
+}
+
+@media (max-width: 1040px) {
+  .light-controls {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .light-controls .sleep-controls {
+    grid-column: span 2;
+  }
+}
+
+@media (max-width: 900px) {
+  .light-stage {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 760px) {
+  .light-controls {
+    grid-template-columns: 1fr;
+  }
+
+  .light-controls .sleep-controls {
+    grid-column: span 1;
+  }
 }
