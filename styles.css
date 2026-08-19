@@ -2433,3 +2433,638 @@ button + button {
     grid-column: span 4;
   }
 }
+
+/* ── 밤에는 선선하게 (temperature_sim) ─────────────────────
+   열화상 장면 + 심부/피부/방 온도 곡선. 몸의 색은 JS가 fill로 직접 꽂으므로
+   여기에는 방·이불·기기처럼 온도와 무관한 것만 있다. */
+
+.swatch-core {
+  background: var(--caffeine);
+}
+
+.swatch-ideal {
+  background: #b3bcc6;
+}
+
+.swatch-distal {
+  background: var(--clearance);
+}
+
+.swatch-roomtemp {
+  background: var(--pressure);
+}
+
+/* 조절판에 select가 처음 등장한다. 슬라이더 칸과 높이가 같아야 줄이 안 튄다 */
+select {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 9px 10px;
+  background: #fff;
+  color: var(--ink);
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 800;
+}
+
+.temp-controls .temp-actions {
+  display: grid;
+  grid-column: span 4;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 14px;
+}
+
+.temp-controls .button-row button {
+  min-height: 44px;
+}
+
+.temp-stage {
+  display: grid;
+  grid-template-columns: minmax(0, 1.42fr) minmax(0, 1fr);
+  gap: 18px;
+  align-items: start;
+  margin-bottom: 16px;
+}
+
+/* 열화상은 어두운 배경 위에서만 제 색으로 읽힌다 */
+.bed-frame {
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 10px;
+  background: #0b1017;
+  overflow: hidden;
+}
+
+.bed-scene {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* ── 장면: 계절 ── */
+
+.sky-top {
+  stop-color: #101a34;
+}
+
+.sky-bottom {
+  stop-color: #24334f;
+}
+
+.bed-scene[data-season="summer"] .sky-top {
+  stop-color: #1c1830;
+}
+
+.bed-scene[data-season="summer"] .sky-bottom {
+  stop-color: #3d3050;
+}
+
+.bed-scene[data-season="winter"] .sky-top {
+  stop-color: #0c1728;
+}
+
+.bed-scene[data-season="winter"] .sky-bottom {
+  stop-color: #223448;
+}
+
+.season-snow,
+.season-tree {
+  display: none;
+}
+
+.bed-scene[data-season="winter"] .season-snow {
+  display: block;
+}
+
+.bed-scene[data-season="spring"] .season-tree,
+.bed-scene[data-season="summer"] .season-tree {
+  display: block;
+}
+
+/* ── 장면: 냉방기 ── */
+
+.device {
+  display: none;
+}
+
+.bed-scene[data-cooling="fan"] .device-fan,
+.bed-scene[data-cooling="ac"] .device-ac {
+  display: block;
+}
+
+.fan-blades {
+  transform-origin: 688px 330px;
+  animation: fan-spin 0.42s linear infinite;
+}
+
+@keyframes fan-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* 부위를 도형으로 나눠 그렸기 때문에, 온도가 고르게 높아지면(더운 방, 두꺼운 이불)
+   몸이 통째로 한 덩어리가 되어 사람으로 안 보인다. 옅은 테두리로 실루엣만 남긴다.
+   fill은 JS가 속성으로 꽂으므로 여기서 stroke만 건드려도 서로 안 부딪친다. */
+.body > *,
+.body .limb-in > *,
+.limb-out > * {
+  stroke: rgb(255 244 232 / 0.22);
+  stroke-width: 1.6;
+}
+
+/* ── 장면: 이불과 손발 ── */
+
+/* 반투명이라 이불 아래의 열화상이 비쳐 보인다. 몸이 사라지면 무슨 일이 나는지 안 보인다 */
+.blanket-cloth {
+  fill: #5d6c81;
+  fill-opacity: 0.58;
+  stroke: #7d8ea6;
+  stroke-width: 2;
+  stroke-opacity: 0.5;
+}
+
+.blanket-full,
+.blanket-short,
+.blanket-folded,
+.limb-out {
+  display: none;
+}
+
+.bed-scene[data-stage="bed"][data-exposed="off"] .blanket-full,
+.bed-scene[data-stage="bed"][data-exposed="on"] .blanket-short,
+.bed-scene[data-stage="before"] .blanket-folded {
+  display: block;
+}
+
+/* 손발을 내놓으면 팔이 이불 위로 올라오고, 몸을 따라 뻗은 팔은 감춘다 */
+.bed-scene[data-exposed="on"] .limb-out {
+  display: block;
+}
+
+.bed-scene[data-exposed="on"] .limb-in {
+  display: none;
+}
+
+/* ── 장면: 열 아지랑이 ── */
+
+/* 손발을 이불 속에 넣으면 그쪽으로 나가던 열이 막힌다. 아지랑이도 같이 걷는다 */
+.bed-scene[data-exposed="off"] .heat-plume {
+  display: none;
+}
+
+.heat-plume path {
+  fill: none;
+  stroke: #ff9f5a;
+  stroke-width: 3;
+  stroke-linecap: round;
+  transition: opacity 0.3s ease;
+  animation: heat-rise 2.4s ease-in-out infinite;
+}
+
+.heat-plume path:nth-child(2) {
+  animation-delay: 0.5s;
+}
+
+.heat-plume path:nth-child(3) {
+  animation-delay: 1s;
+}
+
+@keyframes heat-rise {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  35% {
+    opacity: 0.85;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-16px);
+  }
+}
+
+/* ── 장면: 잠든 표시 ── */
+
+.eye-shut,
+.sleep-z {
+  display: none;
+}
+
+.bed-scene[data-asleep="on"] .eye-shut {
+  display: block;
+}
+
+.bed-scene[data-asleep="on"] .eye-open {
+  display: none;
+}
+
+.bed-scene[data-asleep="on"] .sleep-z {
+  display: block;
+}
+
+.sleep-z {
+  fill: #cfe0f2;
+  font-size: 22px;
+  font-weight: 900;
+  animation: z-float 2.6s ease-in-out infinite;
+}
+
+.sleep-z.is-small {
+  font-size: 15px;
+  animation-delay: 0.9s;
+}
+
+@keyframes z-float {
+  0%,
+  100% {
+    opacity: 0.15;
+  }
+  50% {
+    opacity: 0.95;
+  }
+}
+
+/* ── 장면: 전자온도계 ── */
+
+.lcd-big {
+  fill: #16281e;
+  font-size: 26px;
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+  text-anchor: middle;
+}
+
+.lcd-unit {
+  fill: #16281e;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.lcd-small {
+  fill: #2e4438;
+  font-size: 11px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  text-anchor: middle;
+}
+
+.lcd-small.is-core {
+  fill: #7a3a1c;
+}
+
+.bed-hotspot {
+  cursor: pointer;
+}
+
+.bed-hotspot:focus-visible {
+  outline: none;
+}
+
+.bed-hotspot:hover .hotspot-ring,
+.bed-hotspot:focus-visible .hotspot-ring {
+  opacity: 0.85;
+}
+
+.bed-scene[data-exposed="off"] .pill-dot {
+  fill: #8b96a3;
+}
+
+/* ── 열화상 눈금 ── */
+
+.thermal-scale-caption {
+  margin: 10px 0 5px;
+  color: #8b97a6;
+  font-size: 0.72rem;
+  font-weight: 800;
+}
+
+/* 정거장 값은 temperature.js의 thermalStops와 같아야 한다. 한쪽만 고치면 눈금이 거짓말을 한다 */
+.thermal-scale {
+  height: 10px;
+  border-radius: 999px;
+  background: linear-gradient(
+    90deg,
+    rgb(22 24 66) 0%,
+    rgb(62 40 124) 26%,
+    rgb(150 54 122) 48.7%,
+    rgb(214 92 66) 64.9%,
+    rgb(244 158 52) 77.9%,
+    rgb(255 210 96) 89.6%,
+    rgb(255 247 206) 100%
+  );
+}
+
+.thermal-scale-ticks {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 4px;
+  color: #8b97a6;
+  font-size: 0.68rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── 오른쪽 패널 ── */
+
+.temp-panel {
+  display: grid;
+  align-content: start;
+  gap: 12px;
+}
+
+#perfusionValue {
+  color: var(--caffeine);
+}
+
+#dumpValue {
+  color: var(--clearance);
+}
+
+.bar-perfusion {
+  background: var(--caffeine);
+}
+
+.bar-dump {
+  background: var(--clearance);
+}
+
+/* 게이지의 절반이 "내보내야 하는 만큼"이다. 그 선을 넘겼는지가 곡선의 방향을 정한다 */
+.gauge-track.is-marked {
+  position: relative;
+}
+
+.gauge-track.is-marked::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 2px;
+  height: 100%;
+  background: var(--ink);
+  opacity: 0.55;
+}
+
+.temp-readout {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px 12px;
+  margin: 0;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 12px 14px;
+  background: #fbfcfb;
+}
+
+.temp-readout dt {
+  color: var(--muted);
+  font-size: 0.74rem;
+  font-weight: 800;
+}
+
+.temp-readout dd {
+  margin: 3px 0 0;
+  font-size: 0.96rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.temp-chart-frame {
+  min-height: 0;
+  padding: 8px 6px;
+}
+
+#tempChart {
+  display: block;
+  width: 100%;
+  height: auto;
+  touch-action: none;
+  cursor: ew-resize;
+}
+
+/* ── 차트 안쪽 ── */
+
+.temp-prebed {
+  fill: rgb(24 32 42 / 0.045);
+}
+
+.temp-asleep {
+  fill: rgb(36 95 196 / 0.06);
+}
+
+.temp-grid {
+  stroke: var(--line);
+  stroke-width: 1;
+  stroke-dasharray: 2 5;
+}
+
+.temp-axis-tick {
+  fill: var(--muted);
+  font-size: 12px;
+  font-weight: 800;
+  text-anchor: middle;
+}
+
+.temp-row-label {
+  fill: var(--muted);
+  font-size: 11px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  text-anchor: end;
+}
+
+.temp-panel-title {
+  fill: var(--ink);
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.temp-core-line {
+  fill: none;
+  stroke: var(--caffeine);
+  stroke-width: 3;
+  stroke-linejoin: round;
+}
+
+.temp-ideal-line {
+  fill: none;
+  stroke: #b3bcc6;
+  stroke-width: 2;
+  stroke-dasharray: 6 5;
+}
+
+.temp-goal-line {
+  stroke: var(--muted);
+  stroke-width: 1.5;
+  stroke-dasharray: 1 4;
+}
+
+.temp-goal-label {
+  fill: var(--muted);
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.temp-gate-line {
+  stroke: var(--adenosine);
+  stroke-width: 1.5;
+  stroke-dasharray: 7 4;
+}
+
+.temp-gate-label {
+  fill: var(--adenosine);
+  font-size: 11px;
+  font-weight: 900;
+  text-anchor: end;
+}
+
+.temp-bedtime-line {
+  stroke: var(--ink);
+  stroke-width: 1.5;
+  opacity: 0.4;
+}
+
+.temp-bedtime-label {
+  fill: var(--ink);
+  font-size: 11px;
+  font-weight: 900;
+  text-anchor: end;
+}
+
+.temp-shower-line {
+  stroke: var(--clearance);
+  stroke-width: 1.5;
+  stroke-dasharray: 3 3;
+}
+
+.temp-shower-label {
+  fill: var(--clearance);
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.temp-onset-dot {
+  fill: var(--adenosine);
+  stroke: #fff;
+  stroke-width: 2;
+}
+
+.temp-onset-label {
+  fill: var(--adenosine);
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.temp-wake-mark {
+  fill: var(--plaque);
+}
+
+.temp-ideal-room {
+  stroke: var(--adenosine);
+  stroke-width: 1.5;
+  stroke-dasharray: 7 4;
+}
+
+.temp-ideal-room-label {
+  fill: var(--adenosine);
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.temp-room-line {
+  fill: none;
+  stroke: var(--pressure);
+  stroke-width: 2.5;
+}
+
+.temp-prox-line {
+  fill: none;
+  stroke: var(--plaque);
+  stroke-width: 1.8;
+  stroke-dasharray: 5 4;
+}
+
+.temp-distal-line {
+  fill: none;
+  stroke: var(--clearance);
+  stroke-width: 2.8;
+}
+
+.temp-curve-label {
+  font-size: 11px;
+  font-weight: 900;
+  text-anchor: middle;
+}
+
+.temp-curve-label.is-distal {
+  fill: var(--clearance);
+}
+
+.temp-curve-label.is-prox {
+  fill: var(--plaque);
+}
+
+.temp-curve-label.is-room {
+  fill: var(--pressure);
+}
+
+.temp-playhead {
+  stroke: var(--ink);
+  stroke-width: 1.5;
+  opacity: 0.65;
+}
+
+.temp-playhead-label {
+  fill: var(--ink);
+  font-size: 12px;
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+}
+
+.temp-dot {
+  stroke: #fff;
+  stroke-width: 1.6;
+}
+
+.temp-dot.is-core {
+  fill: var(--caffeine);
+}
+
+.temp-dot.is-room {
+  fill: var(--pressure);
+}
+
+.temp-dot.is-distal {
+  fill: var(--clearance);
+}
+
+@media (max-width: 1040px) {
+  .temp-controls {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .temp-controls .temp-actions {
+    grid-column: span 2;
+  }
+
+  .temp-readout {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 900px) {
+  .temp-stage {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 760px) {
+  .temp-controls {
+    grid-template-columns: 1fr;
+  }
+
+  .temp-controls .temp-actions {
+    grid-column: span 1;
+    grid-template-columns: 1fr;
+  }
+}
