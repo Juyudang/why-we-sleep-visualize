@@ -19,371 +19,162 @@
       <section class="visual-stage" aria-labelledby="stage-title">
         <div class="chart-header">
           <div>
-            <h2 id="stage-title">목록을 외우는 대신, 하루를 짜봅니다</h2>
+            <h2 id="stage-title">벽에 붙여두라고 쓴 목록입니다</h2>
             <p>
-              책의 부록은 열두 줄짜리 목록입니다. 읽으면 다 맞는 말인데, 읽고 나면 남는 게 없습니다.
-              그래서 여기서는 <b>체크리스트를 켜고 끄지 않습니다.</b> 대신 오늘 하루를 직접 짜면
-              열두 항목 중 무엇을 지키고 무엇을 어겼는지가 아래에 <b>결과로</b> 나옵니다.
-              커피를 몇 시에 마셨고 몇 잔을 마셨는지가 밤의 모양을 어떻게 바꾸는지 같이 보세요.
+              책의 부록에 실린 열두 가지입니다. 다른 장면들과 달리 조작할 것이 없습니다.
+              대신 <b>보기 방식을 바꾸고</b>, 원하는 형태로 꺼내 갈 수 있게 해뒀습니다.
+              전체로 읽거나, 제목만 카드로 뽑아 붙여두거나, 한 줄 목록으로 접어두세요.
+              인쇄·이미지·텍스트는 <b>지금 보고 있는 형태 그대로</b> 나갑니다.
             </p>
           </div>
-          <div class="legend" aria-label="그래프 범례">
-            <span><i class="swatch swatch-good"></i>지킨 습관</span>
-            <span><i class="swatch swatch-bad"></i>어긴 습관 · 카페인</span>
-            <span><i class="swatch swatch-rem"></i>렘수면</span>
-          </div>
         </div>
 
-        <div class="control-panel habit-controls" aria-label="하루 조절">
-          <label>
-            <span>취침 시각 <b id="bedtimeValue"></b></span>
-            <input id="bedtime" type="range" min="21" max="26" step="0.25" value="24" />
-          </label>
-          <label>
-            <span>기상 시각 <b id="wakeValue"></b></span>
-            <input id="wake" type="range" min="29" max="34" step="0.25" value="31" />
-          </label>
-          <label>
-            <span>주말 취침 흔들림 <b id="shiftValue"></b></span>
-            <input id="shift" type="range" min="0" max="3" step="0.25" value="2" />
-          </label>
-          <label>
-            <span>마지막 카페인</span>
-            <select id="caffeine">
-              <option value="none">안 마심</option>
-              <option value="8">아침 8시</option>
-              <option value="12">낮 12시</option>
-              <option value="15" selected>오후 3시</option>
-              <option value="18">저녁 6시</option>
-              <option value="21">밤 9시</option>
-            </select>
-          </label>
-          <label>
-            <span>운동</span>
-            <select id="exercise">
-              <option value="none" selected>안 함</option>
-              <option value="morning">아침 7시 반</option>
-              <option value="afternoon">오후 3시</option>
-              <option value="evening">저녁 7시</option>
-              <option value="late">취침 한 시간 전</option>
-            </select>
-          </label>
-          <label>
-            <span>저녁의 술 <b id="drinksValue"></b></span>
-            <input id="drinks" type="range" min="0" max="4" step="1" value="2" />
-          </label>
-          <label>
-            <span>밤에 먹은 것</span>
-            <select id="meal">
-              <option value="none">안 먹음</option>
-              <option value="light">가벼운 간식</option>
-              <option value="heavy" selected>든든한 한 끼</option>
-            </select>
-          </label>
-          <label>
-            <span>낮잠</span>
-            <select id="nap">
-              <option value="none" selected>안 잠</option>
-              <option value="early">오후 1시 반 · 20분</option>
-              <option value="late">오후 4시 반 · 40분</option>
-            </select>
-          </label>
-          <label>
-            <span>잠이 안 올 때</span>
-            <select id="ifAwake">
-              <option value="stay" selected>계속 누워서 기다린다</option>
-              <option value="getup">20분 넘으면 일어난다</option>
-            </select>
-          </label>
-          <label class="toggle-card">
-            <span>담배를 피운다</span>
-            <input id="nicotine" type="checkbox" />
-          </label>
-          <label class="toggle-card">
-            <span>수면 방해 약을 밤에 먹는다</span>
-            <input id="meds" type="checkbox" />
-          </label>
-          <label class="toggle-card">
-            <span>눕기 전 30분 이완한다</span>
-            <input id="windDown" type="checkbox" />
-          </label>
-          <label class="toggle-card">
-            <span>뜨거운 물에 목욕한다</span>
-            <input id="bath" type="checkbox" />
-          </label>
-          <label class="toggle-card">
-            <span>침실을 어둡고 서늘하게</span>
-            <input id="dark" type="checkbox" />
-          </label>
-          <label class="toggle-card">
-            <span>전자 기기와 시계를 치운다</span>
-            <input id="devices" type="checkbox" />
-          </label>
-          <label class="toggle-card">
-            <span>아침에 30분 햇빛을 쬔다</span>
-            <input id="sunlight" type="checkbox" />
-          </label>
-          <div class="habit-actions">
-            <div class="drag-help">
-              위를 바꾸면 아래 하루 띠와 밤 구조, 그리고 열두 항목의 판정이 함께 움직입니다.
-              <b id="statusValue"></b>
-            </div>
-            <div class="button-row">
-              <button id="applyIdeal" type="button">열두 가지 다 지키기</button>
-              <button id="reset" type="button">되돌리기</button>
-            </div>
+        <div class="tips-toolbar">
+          <div class="tips-modes" role="group" aria-label="보기 방식">
+            <button type="button" data-mode="full" aria-pressed="true">전체</button>
+            <button type="button" data-mode="card" aria-pressed="false">제목만</button>
+            <button type="button" data-mode="list" aria-pressed="false">한 줄 목록</button>
+          </div>
+          <div class="tips-exports" role="group" aria-label="내보내기">
+            <button type="button" id="toPrint">인쇄 · PDF</button>
+            <button type="button" id="toImage">이미지로 저장</button>
+            <button type="button" id="toText">텍스트 파일</button>
+            <button type="button" id="toClipboard">복사</button>
           </div>
         </div>
+        <p class="tips-status" id="toolStatus" role="status">전체 보기입니다. 제목과 본문이 모두 나갑니다.</p>
 
-        <div class="chart-frame habit-day-frame">
-          <svg id="habitDay" role="img" aria-label="기상 시각을 오른쪽 끝에 둔 24시간 띠. 카페인 잔류, 하루의 사건, 주중과 주말의 취침 구간을 함께 보여줍니다."></svg>
-        </div>
+        <div class="tip-grid" id="tipGrid" data-mode="full">
+          <article class="tip-card">
+            <span class="metric">01</span>
+            <h3>수면 시간표를 지켜라</h3>
+            <p class="tip-body">
+              매일 같은 시간에 눕고 일어나라. 사람은 습관의 동물이라 수면 패턴을 바꾸면 적응하기가 어렵다.
+              주중에 부족한 잠은 주말에 더 잔다고 완전히 보충되지 않으며, 그렇게 하면 월요일에 일찍 일어나기가
+              더 힘들어진다. 일어날 시간뿐 아니라 <b>자러 갈 시간에도 알람</b>을 맞추자.
+              열두 가지 중 단 한 가지만 기억하겠다면 이 항목을 택하자.
+            </p>
+          </article>
 
-        <div class="habit-stage">
-          <div class="chart-frame habit-night-frame">
-            <svg id="habitNight" role="img" aria-label="오늘 밤의 수면 단계 그래프"></svg>
-          </div>
+          <article class="tip-card">
+            <span class="metric">02</span>
+            <h3>운동은 좋지만, 너무 늦게 하지는 말라</h3>
+            <p class="tip-body">
+              매일같이 적어도 30분은 운동을 하려고 애쓰자. 하지만 잠자기 두세 시간 이전까지는 끝내자.
+            </p>
+          </article>
 
-          <div class="habit-panel">
-            <div class="habit-score">
-              <span class="gauge-label">오늘 밤 점수 <b id="scoreValue">—</b></span>
-              <div class="gauge-track"><i id="scoreBar" class="bar-score"></i></div>
-              <small>양(40) + 깊은 잠(20) + 렘수면(20) + 연속성(10) + 규칙성(10)으로 매깁니다.</small>
-            </div>
+          <article class="tip-card">
+            <span class="metric">03</span>
+            <h3>카페인과 니코틴을 피하라</h3>
+            <p class="tip-body">
+              커피, 콜라, 특정한 차, 초콜릿에는 자극제인 카페인이 들어 있으며, 그 효과가 완전히 사라지는 데에는
+              <b>여덟 시간까지</b> 걸릴 수 있다. 따라서 오후 늦게 마신 커피 한 잔은 밤에 잠들기 어렵게 만들 수 있다.
+              니코틴도 자극제이며, 그래서 흡연자는 아주 얕은 잠만 자곤 한다. 게다가 니코틴 금단 증상 때문에
+              아침에 너무 일찍 깨곤 한다.
+            </p>
+          </article>
 
-            <div class="gauge">
-              <span class="gauge-label">깊은 잠 <b id="deepValue">—</b></span>
-              <div class="gauge-track"><i id="deepBar" class="bar-deep"></i></div>
-              <small>가득 찬 상태가 열두 가지를 다 지킨 밤(23시–7시)입니다.</small>
-            </div>
-            <div class="gauge">
-              <span class="gauge-label">렘수면 <b id="remValue">—</b></span>
-              <div class="gauge-track"><i id="remBar" class="bar-rem"></i></div>
-              <small>렘은 새벽에 몰려 있습니다. 늦게 자거나 일찍 깨면 여기가 먼저 잘립니다.</small>
-            </div>
+          <article class="tip-card">
+            <span class="metric">04</span>
+            <h3>잠자러 가기 전에는 알코올 함유 음료를 피하라</h3>
+            <p class="tip-body">
+              잠자러 가기 전에 술을 마시면 긴장을 푸는 데 도움이 될 수도 있지만, 많이 마시면 렘수면이 사라지고
+              더 얕은 잠만 자게 된다. 폭음을 하면 밤에 호흡에도 지장이 올 수 있다.
+              또 알코올의 효과가 사라지는 한밤중에 깨기도 한다.
+            </p>
+            <p class="tip-link">이 대목은 <a href="../alcohol_sim/">밤술과 가짜 잠</a>에서 따로 다뤘습니다.</p>
+          </article>
 
-            <dl class="habit-readout">
-              <div>
-                <dt>지킨 항목</dt>
-                <dd id="keptValue">—</dd>
-              </div>
-              <div>
-                <dt>잠들기까지</dt>
-                <dd id="latencyValue">—</dd>
-              </div>
-              <div>
-                <dt>실제로 잔 시간</dt>
-                <dd id="asleepValue">—</dd>
-              </div>
-              <div>
-                <dt>밤중에 깬 횟수</dt>
-                <dd id="arousalValue">—</dd>
-              </div>
-              <div>
-                <dt>주말 시차</dt>
-                <dd id="jetlagValue">—</dd>
-              </div>
-            </dl>
-          </div>
+          <article class="tip-card">
+            <span class="metric">05</span>
+            <h3>밤에는 음식을 많이 먹지 말라</h3>
+            <p class="tip-body">
+              가벼운 간식은 괜찮지만, 많은 음식은 소화 불량을 일으킬 수 있고 그러면 잠이 방해를 받는다.
+              밤에 음료를 너무 많이 마시면 소변이 마려워서 자주 깰 수가 있다.
+            </p>
+          </article>
+
+          <article class="tip-card">
+            <span class="metric">06</span>
+            <h3>가능하다면, 잠을 못 이루게 하거나 설치게 하는 약을 피하라</h3>
+            <p class="tip-body">
+              몇몇 흔히 처방되는 심장약, 혈압약, 천식 약뿐 아니라, 기침·감기·알레르기에 쓰이는 비처방 약과 허브도
+              수면 패턴을 교란할 수 있다. 잠을 자는 데 문제가 있다면, 의사나 약사에게 자신이 먹는 약 중에서
+              불면증을 일으킬 만한 것이 있는지 물어보고, 있다면 복용 시간을 낮이나 이른 저녁으로 바꾸어도 되는지 알아보자.
+            </p>
+          </article>
+
+          <article class="tip-card">
+            <span class="metric">07</span>
+            <h3>오후 3시 이후에는 낮잠을 자지 말자</h3>
+            <p class="tip-body">
+              낮잠은 부족한 잠을 보충하는 데 도움을 줄 수 있지만, 오후 늦게 낮잠을 자면
+              밤에 잠들기가 더 어려워질 수 있다.
+            </p>
+          </article>
+
+          <article class="tip-card">
+            <span class="metric">08</span>
+            <h3>잠자리에 들기 전에 긴장을 풀어라</h3>
+            <p class="tip-body">
+              긴장을 풀 시간조차 없을 만큼 일정을 지나치게 많이 만들지 말라.
+              책을 읽거나 음악을 듣는 등 긴장을 푸는 활동을 잠자리 습관의 일부로 만들어야 한다.
+            </p>
+          </article>
+
+          <article class="tip-card">
+            <span class="metric">09</span>
+            <h3>잠자러 가기 전에 뜨거운 물에 목욕을 하라</h3>
+            <p class="tip-body">
+              욕조에서 나온 뒤 체온이 떨어지면 졸음이 더 잘 올 수 있고,
+              또 목욕은 긴장을 풀고 느긋하게 만들어서 더 쉽게 잠들 수 있게 해준다.
+            </p>
+            <p class="tip-link">이 대목은 <a href="../temperature_sim/">밤에는 선선하게</a>에서 따로 다뤘습니다.</p>
+          </article>
+
+          <article class="tip-card">
+            <span class="metric">10</span>
+            <h3>침실을 어둡게 하고, 차갑게 하고, 침실에서 전자 기기를 치워라</h3>
+            <p class="tip-body">
+              소음, 밝은 빛, 불편한 침대, 따뜻한 온도 등 잠을 방해할 만한 것들을 침실에서 없애라.
+              침실 온도를 서늘하게 유지하면 잠을 더 잘 잔다. 침실에 텔레비전, 휴대 전화, 컴퓨터 같은 것들이 있으면
+              주의가 산만해져서 필요한 잠을 제대로 못 잘 수 있다. 편안한 매트리스와 베개는 숙면에 도움이 될 수 있다.
+              불면증이 있는 사람은 시계를 계속 쳐다보곤 하니, <b>시계 문자판을 안 보이는 쪽으로 돌려놓아라.</b>
+            </p>
+            <p class="tip-link">저녁의 조명은 <a href="../light_sim/">저녁의 빛</a>에서 따로 다뤘습니다.</p>
+          </article>
+
+          <article class="tip-card">
+            <span class="metric">11</span>
+            <h3>적절히 햇빛을 쬐어라</h3>
+            <p class="tip-body">
+              햇빛은 하루 수면 패턴을 조절하는 데 대단히 중요하다. 매일 적어도 30분 동안 실외에서 자연광을 받도록
+              노력하자. 가능하다면 햇빛을 받으면서 일어나거나 아침에 아주 밝은 빛을 접하자. 수면 전문가들은
+              잠이 드는 데 문제가 있다면 아침 햇빛을 한 시간 동안 접하고, 잠자리에 가기 전에 조명을 다 끄라고 권한다.
+            </p>
+          </article>
+
+          <article class="tip-card">
+            <span class="metric">12</span>
+            <h3>말똥말똥하다면 잠자리에 누워 있지 말라</h3>
+            <p class="tip-body">
+              누웠는데 20분 넘게 잠이 안 오거나 불안하거나 걱정스러운 마음이 들기 시작한다면,
+              일어나서 졸음이 올 때까지 긴장을 푸는 활동을 하라.
+              못 잘지도 모르겠다는 불안감은 잠들기 더 어렵게 할 수 있다.
+            </p>
+          </article>
         </div>
 
         <p class="model-note">
-          열두 항목의 방향(무엇이 잠을 밀어내고 무엇이 당기는지)은 책을 따랐지만,
-          잠복기 몇 분, 각성 몇 번 같은 <b>숫자는 전부 체감을 위해 제가 정한 값</b>입니다. 연구 수치가 아닙니다.
-          카페인 반감기 6시간과 수면 주기 90분처럼 널리 쓰이는 값만 실제 범위를 가져다 썼습니다.
-          <span>참고: 매튜 워커 『우리는 왜 잠을 자야 할까』 부록 — 원문은 미국 국립보건원(NIH)의 수면 위생 권고를 옮긴 것입니다.</span>
+          매튜 워커 『우리는 왜 잠을 자야 할까』 부록에 실린 목록입니다.
+          원문은 미국 국립보건원(NIH)의 수면 위생 권고를 옮긴 것입니다.
+          <span>몇 항목은 이 프로젝트의 다른 장면에서 따로 다뤘습니다 — 03·11은 저녁의 빛, 04는 밤술과 가짜 잠, 09·10은 밤에는 선선하게.</span>
         </p>
-      </section>
-
-      <section class="tip-section" aria-labelledby="tips-title">
-        <div class="tip-head">
-          <h2 id="tips-title">건강한 수면을 위한 열두 가지 비결</h2>
-          <p>위에서 짠 하루를 기준으로 각 항목을 판정했습니다. 회색 줄은 지킨 항목, 붉은 줄은 어긴 항목입니다.</p>
-        </div>
-
-        <div class="tip-grid">
-          <article class="tip-card" id="tip1" data-kept="no">
-            <header>
-              <span class="metric">01</span>
-              <span class="tip-state">—</span>
-            </header>
-            <h3>수면 시간표를 지켜라</h3>
-            <p>
-              매일 같은 시간에 눕고 일어납니다. 주중에 부족한 잠은 주말에 몰아 잔다고 보충되지 않고,
-              그렇게 하면 월요일 아침이 더 힘들어집니다. 일어날 시간뿐 아니라
-              <b>자러 갈 시간에도 알람</b>을 맞추세요. 열두 가지 중 하나만 기억하겠다면 이것입니다.
-            </p>
-            <p class="tip-note"></p>
-          </article>
-
-          <article class="tip-card" id="tip2" data-kept="no">
-            <header>
-              <span class="metric">02</span>
-              <span class="tip-state">—</span>
-            </header>
-            <h3>운동은 좋지만, 너무 늦게 하지는 말라</h3>
-            <p>매일 적어도 30분. 다만 잠자기 두세 시간 전까지는 끝냅니다.</p>
-            <p class="tip-note"></p>
-          </article>
-
-          <article class="tip-card" id="tip3" data-kept="no">
-            <header>
-              <span class="metric">03</span>
-              <span class="tip-state">—</span>
-            </header>
-            <h3>카페인과 니코틴을 피하라</h3>
-            <p>
-              커피, 콜라, 차, 초콜릿의 카페인은 효과가 완전히 사라지는 데 <b>여덟 시간까지</b> 걸립니다.
-              니코틴도 자극제라 흡연자는 얕게 자고, 금단 증상 때문에 아침에 너무 일찍 깹니다.
-            </p>
-            <p class="tip-note"></p>
-          </article>
-
-          <article class="tip-card" id="tip4" data-kept="no">
-            <header>
-              <span class="metric">04</span>
-              <span class="tip-state">—</span>
-            </header>
-            <h3>잠자러 가기 전에는 술을 피하라</h3>
-            <p>
-              긴장은 풀릴지 몰라도 많이 마시면 렘수면이 사라지고 잠이 얕아집니다.
-              알코올의 효과가 사라지는 한밤중에 깨기도 합니다.
-            </p>
-            <p class="tip-note"></p>
-          </article>
-
-          <article class="tip-card" id="tip5" data-kept="no">
-            <header>
-              <span class="metric">05</span>
-              <span class="tip-state">—</span>
-            </header>
-            <h3>밤에는 음식을 많이 먹지 말라</h3>
-            <p>가벼운 간식은 괜찮습니다. 많이 먹으면 소화 불량이 잠을 방해하고, 많이 마시면 소변 때문에 자주 깹니다.</p>
-            <p class="tip-note"></p>
-          </article>
-
-          <article class="tip-card" id="tip6" data-kept="no">
-            <header>
-              <span class="metric">06</span>
-              <span class="tip-state">—</span>
-            </header>
-            <h3>가능하다면, 잠을 설치게 하는 약을 피하라</h3>
-            <p>
-              심장약, 혈압약, 천식 약과 기침·감기·알레르기 약, 허브도 수면을 교란할 수 있습니다.
-              의사나 약사에게 복용 시간을 낮이나 이른 저녁으로 옮길 수 있는지 물어보세요.
-            </p>
-            <p class="tip-note"></p>
-          </article>
-
-          <article class="tip-card" id="tip7" data-kept="no">
-            <header>
-              <span class="metric">07</span>
-              <span class="tip-state">—</span>
-            </header>
-            <h3>오후 3시 이후에는 낮잠을 자지 말자</h3>
-            <p>낮잠은 부족한 잠을 메우는 데 도움이 되지만, 늦은 낮잠은 밤에 쓸 몫을 당겨 씁니다.</p>
-            <p class="tip-note"></p>
-          </article>
-
-          <article class="tip-card" id="tip8" data-kept="no">
-            <header>
-              <span class="metric">08</span>
-              <span class="tip-state">—</span>
-            </header>
-            <h3>잠자리에 들기 전에 긴장을 풀어라</h3>
-            <p>긴장을 풀 시간조차 없을 만큼 일정을 채우지 않습니다. 책이나 음악을 잠자리 습관의 일부로 만듭니다.</p>
-            <p class="tip-note"></p>
-          </article>
-
-          <article class="tip-card" id="tip9" data-kept="no">
-            <header>
-              <span class="metric">09</span>
-              <span class="tip-state">—</span>
-            </header>
-            <h3>잠자러 가기 전에 뜨거운 물에 목욕을 하라</h3>
-            <p>
-              욕조에서 나온 뒤 체온이 떨어지면 졸음이 옵니다. 목욕 자체도 긴장을 풀어줍니다.
-              (이 대목은 <a href="../temperature_sim/">밤에는 선선하게</a>에서 따로 다뤘습니다.)
-            </p>
-            <p class="tip-note"></p>
-          </article>
-
-          <article class="tip-card" id="tip10" data-kept="no">
-            <header>
-              <span class="metric">10</span>
-              <span class="tip-state">—</span>
-            </header>
-            <h3>침실을 어둡게, 차갑게, 전자 기기는 치워라</h3>
-            <p>
-              소음, 밝은 빛, 불편한 침대, 따뜻한 온도를 없앱니다. 텔레비전·휴대전화·컴퓨터가 있으면
-              주의가 산만해집니다. 불면증이 있으면 시계를 계속 보게 되니 <b>문자판을 안 보이게 돌려두세요.</b>
-            </p>
-            <p class="tip-note"></p>
-          </article>
-
-          <article class="tip-card" id="tip11" data-kept="no">
-            <header>
-              <span class="metric">11</span>
-              <span class="tip-state">—</span>
-            </header>
-            <h3>적절히 햇빛을 쬐어라</h3>
-            <p>
-              매일 적어도 30분은 실외에서 자연광을 받습니다. 잠들기 어렵다면 아침 햇빛을 한 시간 쬐고,
-              잠자리에 들기 전에는 조명을 다 끄라고 수면 전문가들은 권합니다.
-            </p>
-            <p class="tip-note"></p>
-          </article>
-
-          <article class="tip-card" id="tip12" data-kept="no">
-            <header>
-              <span class="metric">12</span>
-              <span class="tip-state">—</span>
-            </header>
-            <h3>말똥말똥하다면 잠자리에 누워 있지 말라</h3>
-            <p>
-              20분 넘게 잠이 안 오거나 걱정이 들기 시작하면 일어나서 졸음이 올 때까지 다른 것을 합니다.
-              못 잘지도 모른다는 불안이 잠을 더 밀어냅니다.
-            </p>
-            <p class="tip-note"></p>
-          </article>
-        </div>
-      </section>
-
-      <section class="insight-grid" aria-label="핵심 설명">
-        <article>
-          <span class="metric">01</span>
-          <h3>열두 개의 무게는 같지 않다</h3>
-          <p>
-            <b>열두 가지 다 지키기</b>를 누른 다음 하나씩만 어겨보면 낙폭이 자릿수로 갈립니다.
-            목욕이나 이완을 빼먹는 것은 점수를 거의 건드리지 못하는데,
-            <b>주말 흔들림</b>과 <b>술</b>은 그 열 배를 깎습니다.
-            책이 "하나만 기억하라면 시간표"라고 말하는 이유가 여기서 보입니다 —
-            시간표는 잠드는 시각과 하루 리듬을 동시에 건드리는 유일한 항목입니다.
-          </p>
-        </article>
-        <article>
-          <span class="metric">02</span>
-          <h3>빨리 잠드는 것과 잘 자는 것은 다르다</h3>
-          <p>
-            술을 늘리면 <b>잠들기까지가 짧아집니다.</b> 점수는 떨어집니다.
-            진정은 잠이 아니고, 줄어든 잠복기는 렘수면과 밤의 연속성을 내주고 산 것이기 때문입니다.
-            같은 함정이 <a href="../alcohol_sim/">밤술과 가짜 잠</a>의 주제입니다.
-          </p>
-        </article>
-        <article>
-          <span class="metric">03</span>
-          <h3>어긴 항목은 밤의 뒤쪽에서 청구된다</h3>
-          <p>
-            깊은 잠은 초저녁 주기에 몰려 있고 렘은 새벽으로 갈수록 길어집니다.
-            그래서 취침이 늦어지거나 밤이 조각날 때 먼저 사라지는 것은 대개 <b>렘</b>입니다.
-            위 그래프에서 렘 막대가 어디쯤에서 끊기는지 보세요.
-          </p>
-        </article>
       </section>
     </main>
 
     <script src="../nav.js"></script>
-    <script src="../shared.js"></script>
     <script src="../habits.js"></script>
   </body>
 </html>

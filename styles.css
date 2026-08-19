@@ -3070,349 +3070,58 @@ select {
 }
 
 /* ── 열두 가지 비결 (habits_sim) ───────────────────────────
-   지킴/어김에 새 색을 만들지 않았다. 이 프로젝트에서 --adenosine(초록)은 이미
-   "잠을 끌어당기는 쪽", --caffeine(주황)은 "잠을 밀어내는 쪽"이라 그대로 쓴다. */
+   시뮬레이션이 없는 유일한 페이지다. 목록을 세 가지 형태로 보여주고
+   그대로 인쇄·이미지·텍스트로 내보내는 것이 전부다.
+   홈과 공유하는 .insight-grid를 쓰지 않는다 — 보기 방식에 따라 격자가 통째로 바뀌므로
+   여기서만 쓰는 .tip-grid를 따로 뒀다. */
 
-.swatch-good {
-  background: var(--adenosine);
-}
-
-.swatch-bad {
-  background: var(--caffeine);
-}
-
-.swatch-rem {
-  background: var(--circadian);
-}
-
-/* 조절 항목이 열여섯 개라 네 칸 그대로 두고 줄을 늘린다 */
-.habit-actions {
-  display: grid;
-  grid-column: span 4;
-  grid-template-columns: minmax(0, 1fr) auto;
-  gap: 14px;
-}
-
-.habit-day-frame {
-  min-height: 0;
-  padding: 8px 6px;
-}
-
-#habitDay,
-#habitNight {
-  display: block;
-  width: 100%;
-  height: auto;
-}
-
-.habit-stage {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 320px;
-  gap: 14px;
-  margin-top: 14px;
-}
-
-/* 오른쪽 패널이 더 길어서 프레임이 늘어난다. 그래프는 가운데에 세워 둔다 */
-.habit-night-frame {
+.tips-toolbar {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  min-height: 0;
-  padding: 8px 6px;
-}
-
-.habit-panel {
-  display: grid;
-  align-content: start;
-  gap: 12px;
-}
-
-/* 점수만 다른 게이지보다 앞에 세운다. 이 페이지에서 유일하게 열두 항목을 한 숫자로 합친 값이다 */
-.habit-score {
-  display: grid;
-  gap: 8px;
-  border: 1px solid var(--ink);
-  border-radius: 8px;
-  padding: 14px;
-  background: var(--surface);
-}
-
-#scoreValue {
-  color: var(--ink);
-  font-size: 1.9rem;
-}
-
-.bar-score {
-  background: var(--ink);
-}
-
-.bar-deep {
-  background: var(--pressure);
-}
-
-.bar-rem {
-  background: var(--circadian);
-}
-
-#deepValue {
-  color: var(--pressure);
-}
-
-#remValue {
-  color: var(--circadian);
-}
-
-.habit-readout {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 10px 12px;
-  margin: 0;
+  justify-content: space-between;
+  gap: 10px 16px;
   border: 1px solid var(--line);
   border-radius: 8px;
   padding: 12px 14px;
   background: #fbfcfb;
 }
 
-.habit-readout dt {
-  color: var(--muted);
-  font-size: 0.74rem;
-  font-weight: 800;
+.tips-modes,
+.tips-exports {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
 }
 
-.habit-readout dd {
-  margin: 3px 0 0;
-  font-size: 0.96rem;
-  font-weight: 800;
-  font-variant-numeric: tabular-nums;
-}
-
-/* ── 하루 띠 안쪽 ── */
-
-.habit-panel-title {
-  fill: var(--ink);
-  font-size: 12px;
-  font-weight: 800;
-}
-
-.habit-caffeine-bed {
-  fill: rgb(24 32 42 / 0.035);
-}
-
-.habit-caffeine-fill {
-  fill: rgb(201 130 43 / 0.2);
-}
-
-.habit-caffeine-line {
-  fill: none;
-  stroke: var(--caffeine);
-  stroke-width: 2;
-}
-
-.habit-caffeine-dot {
-  fill: var(--caffeine);
-  stroke: var(--surface);
-  stroke-width: 1.5;
-}
-
-.habit-caffeine-note {
-  fill: var(--caffeine);
-  font-size: 11px;
-  font-weight: 800;
-}
-
-.habit-band-awake {
-  fill: var(--wake);
-  stroke: var(--line);
-}
-
-/* 취침 전 세 시간. 운동, 술, 야식이 이 안에 들어오는지가 밤을 가른다 */
-.habit-band-window {
-  fill: rgb(201 130 43 / 0.13);
-}
-
-.habit-band-sleep {
-  fill: #2b3648;
-}
-
-.habit-band-sleep.is-weekend {
-  fill: rgb(43 54 72 / 0.55);
-}
-
-.habit-band-text {
-  fill: #f2f5f8;
-  font-size: 11px;
-  font-weight: 800;
-}
-
-.habit-band-text.is-end {
-  text-anchor: end;
-}
-
-.habit-row-label {
-  fill: var(--muted);
-  font-size: 11px;
-  font-weight: 800;
-  text-anchor: end;
-}
-
-.habit-shift-arrow {
-  stroke: var(--caffeine);
-  stroke-width: 2;
-  stroke-dasharray: 3 3;
-}
-
-.habit-shift-label {
-  fill: var(--caffeine);
-  font-size: 11px;
-  font-weight: 800;
-  text-anchor: middle;
-}
-
-.habit-shift-label.is-flat {
-  fill: var(--adenosine);
-  text-anchor: start;
-}
-
-.habit-event-stem {
-  stroke-width: 1;
-  opacity: 0.5;
-}
-
-.habit-event-stem.is-good,
-.habit-event-dot.is-good {
-  stroke: var(--adenosine);
-}
-
-.habit-event-stem.is-bad,
-.habit-event-dot.is-bad {
-  stroke: var(--caffeine);
-}
-
-.habit-event-dot {
-  stroke-width: 2;
-  fill: var(--surface);
-}
-
-.habit-event-label {
-  font-size: 11px;
-  font-weight: 800;
-  text-anchor: middle;
-}
-
-.habit-event-label.is-good {
-  fill: var(--adenosine);
-}
-
-.habit-event-label.is-bad {
-  fill: var(--caffeine);
-}
-
-.habit-grid {
-  stroke: #e7edf2;
-  stroke-width: 1;
-}
-
-.habit-axis-tick {
-  fill: var(--muted);
-  font-size: 11px;
-  font-weight: 700;
-  text-anchor: middle;
-}
-
-/* ── 밤 구조 안쪽 ── */
-
-/* 깊어질수록 진해진다. 03과 같은 규칙이라 눈이 헷갈리지 않는다 */
-.habit-stage-row {
-  fill: rgb(24 32 42 / 0.03);
-}
-
-.habit-stage-row.row-rem {
-  fill: rgb(134 87 201 / 0.09);
-}
-
-.habit-stage-row.row-light {
-  fill: rgb(24 32 42 / 0.06);
-}
-
-.habit-stage-row.row-deep {
-  fill: rgb(24 32 42 / 0.1);
-}
-
-.habit-stage-bar {
-  fill: var(--pressure);
-}
-
-.habit-stage-bar.is-rem {
-  fill: var(--circadian);
-}
-
-.habit-stage-bar.is-light {
-  fill: rgb(36 95 196 / 0.45);
-}
-
-.habit-stage-bar.is-wake {
-  fill: var(--caffeine);
-}
-
-/* 눕기는 했지만 아직 자고 있지 않은 구간. 각성과 같은 줄이되 채우지 않는다 */
-.habit-stage-bar.is-settle {
-  fill: rgb(201 130 43 / 0.22);
-  stroke: var(--caffeine);
-  stroke-dasharray: 3 3;
-  stroke-width: 1;
-}
-
-.habit-hypnogram-line {
-  fill: none;
-  stroke: var(--ink);
-  stroke-width: 1.4;
-  stroke-linejoin: round;
-  opacity: 0.45;
-}
-
-.habit-onset-line {
-  stroke: var(--ink);
-  stroke-width: 1.5;
-  stroke-dasharray: 5 5;
-  opacity: 0.6;
-}
-
-.habit-onset-label {
-  fill: var(--ink);
-  font-size: 11px;
-  font-weight: 900;
-}
-
-/* ── 열두 항목 목록 ────────────────────────────────────────
-   홈과 sim 페이지가 공유하는 .insight-grid를 쓰지 않는다.
-   이 목록은 판정 상태(data-kept)에 따라 테두리가 바뀌어야 해서 따로 둔다. */
-
-.tip-section {
-  margin-top: 16px;
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  padding: 22px;
+/* 기본 button 규칙은 첫 버튼만 진하게 칠한다(button + button).
+   여기서는 어느 버튼이 켜져 있는지가 색을 정해야 하므로 되돌린다. */
+.tips-toolbar button {
+  padding: 8px 14px;
   background: var(--surface);
+  color: var(--ink);
 }
 
-.tip-head {
-  margin-bottom: 16px;
+.tips-modes button[aria-pressed="true"] {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: #fff;
 }
 
-.tip-head h2 {
-  margin-bottom: 6px;
-  font-size: 1.28rem;
+.tips-exports button {
+  color: var(--pressure);
 }
 
-.tip-head p {
+.tips-status {
+  margin: 10px 2px 16px;
   color: var(--muted);
-  font-size: 0.9rem;
+  font-size: 0.84rem;
   font-weight: 700;
   word-break: keep-all;
 }
 
 .tip-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 12px;
 }
 
@@ -3421,22 +3130,10 @@ select {
   align-content: start;
   gap: 8px;
   border: 1px solid var(--line);
-  border-left: 4px solid var(--adenosine);
+  border-left: 4px solid var(--pressure);
   border-radius: 8px;
-  padding: 16px;
+  padding: 18px;
   background: #fbfcfb;
-}
-
-.tip-card[data-kept="no"] {
-  border-left-color: var(--caffeine);
-  background: rgb(201 130 43 / 0.05);
-}
-
-.tip-card header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
 }
 
 .tip-card .metric {
@@ -3444,76 +3141,143 @@ select {
   color: var(--muted);
 }
 
-.tip-state {
-  border-radius: 999px;
-  padding: 3px 10px;
-  background: var(--adenosine);
-  color: #fff;
-  font-size: 0.74rem;
-  font-weight: 900;
-}
-
-.tip-card[data-kept="no"] .tip-state {
-  background: var(--caffeine);
-}
-
 .tip-card h3 {
-  font-size: 1rem;
-  line-height: 1.35;
+  font-size: 1.02rem;
+  line-height: 1.4;
   word-break: keep-all;
 }
 
 .tip-card p {
   color: var(--muted);
-  font-size: 0.88rem;
-  line-height: 1.6;
+  font-size: 0.9rem;
+  line-height: 1.65;
   word-break: keep-all;
 }
 
-.tip-card a {
-  color: var(--pressure);
-  font-weight: 800;
-}
-
-/* 판정 한 줄은 본문과 달리 지금 하루에 대한 이야기라, 선을 그어 분리한다 */
-.tip-card .tip-note {
-  border-top: 1px dashed var(--line);
-  padding-top: 8px;
-  color: var(--ink);
+.tip-card .tip-link {
+  font-size: 0.82rem;
   font-weight: 700;
 }
 
-@media (max-width: 1040px) {
-  .habit-controls {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .habit-actions {
-    grid-column: span 2;
-  }
-
-  .tip-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
+.tip-link a {
+  color: var(--pressure);
 }
 
-@media (max-width: 900px) {
-  .habit-stage {
-    grid-template-columns: 1fr;
+/* ── 보기 방식 ── */
+
+.tip-grid[data-mode="full"] {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+/* 제목만 볼 때는 카드가 벽에 붙이는 쪽지에 가까워진다. 글자를 키우고 수를 늘린다 */
+.tip-grid[data-mode="card"] {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.tip-grid[data-mode="card"] .tip-card h3 {
+  font-size: 1.1rem;
+}
+
+.tip-grid[data-mode="list"] {
+  gap: 0;
+}
+
+.tip-grid[data-mode="list"] .tip-card {
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: baseline;
+  gap: 14px;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  border-radius: 0;
+  padding: 12px 4px;
+  background: none;
+}
+
+.tip-grid[data-mode="list"] .tip-card:last-child {
+  border-bottom: 0;
+}
+
+.tip-grid[data-mode="list"] .metric {
+  color: var(--pressure);
+}
+
+.tip-grid[data-mode="list"] .tip-card h3 {
+  font-size: 0.98rem;
+}
+
+.tip-grid:not([data-mode="full"]) .tip-body,
+.tip-grid:not([data-mode="full"]) .tip-link {
+  display: none;
+}
+
+@media (max-width: 1040px) {
+  .tip-grid[data-mode="full"] {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .tip-grid[data-mode="card"] {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
 
 @media (max-width: 760px) {
-  .habit-controls {
+  .tip-grid[data-mode="full"] {
     grid-template-columns: 1fr;
   }
 
-  .habit-actions {
-    grid-column: span 1;
-    grid-template-columns: 1fr;
+  .tip-grid[data-mode="card"] {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .tip-grid {
-    grid-template-columns: 1fr;
+  .tips-toolbar {
+    justify-content: flex-start;
+  }
+}
+
+/* ── 인쇄 (인쇄 창에서 "PDF로 저장"을 고르면 그대로 PDF가 된다) ──
+   화면에서 고른 보기 방식이 그대로 종이로 간다. 조작할 것만 걷어낸다. */
+
+@page {
+  margin: 14mm;
+}
+
+@media print {
+  .site-nav,
+  .tips-toolbar,
+  .tips-status,
+  .chapter-pill,
+  .tip-link,
+  /* 보기 방식과 내보내기를 설명하는 문단이다. 종이에서는 할 수 있는 게 없다 */
+  .chart-header p {
+    display: none;
+  }
+
+  body {
+    background: #fff;
+  }
+
+  .app-shell {
+    width: 100%;
+    padding: 0;
+  }
+
+  .visual-stage {
+    border: 0;
+    padding: 0;
+    box-shadow: none;
+  }
+
+  /* 카드가 페이지 경계에서 반토막 나면 목록으로서 못 쓴다 */
+  .tip-card {
+    background: none;
+    break-inside: avoid;
+  }
+
+  .tip-grid[data-mode="full"] {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .model-note {
+    break-inside: avoid;
   }
 }

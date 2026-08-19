@@ -44,7 +44,7 @@ const visualizations = [
     title: "열두 가지 비결",
     path: "habits_sim",
     ready: true,
-    description: "부록의 열두 가지를 체크리스트로 읽는 대신, 하루를 직접 짜서 무엇을 지키고 어겼는지 봅니다.",
+    description: "부록의 열두 가지입니다. 전체·제목만·한 줄 목록으로 바꿔 보고 인쇄, 이미지, 텍스트로 꺼내 갑니다.",
   },
   {
     title: "카페인의 영향",
