@@ -1,0 +1,399 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Why We Sleep Visual Notes</title>
+    <link rel="stylesheet" href="../styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="topbar" aria-labelledby="page-title">
+        <div>
+          <p class="eyebrow">Visual Note 06</p>
+          <h1 id="page-title">밤에는 선선하게</h1>
+        </div>
+        <div class="chapter-pill">Chapter 2: 카페인, 시차증, 멜라토닌</div>
+      </section>
+
+      <section class="visual-stage" aria-labelledby="stage-title">
+        <div class="chart-header">
+          <div>
+            <h2 id="stage-title">심부 온도가 1도 떨어져야 잠이 옵니다</h2>
+            <p>
+              잠은 <b>몸이 식어야</b> 시작됩니다. 그래서 너무 더운 방보다 너무 추운 방에서 잠들기가 더 쉽습니다.
+              열은 주로 <b>손발</b>로 나갑니다. 밤에 이불 밖으로 발을 삐죽 내미는 건 버릇이 아니라
+              몸이 열을 버리는 방식입니다. 아래 사람은 열화상으로 그렸습니다.
+              <b>재생</b>을 누르면 취침 한 시간 전부터 새벽 4시까지가 지나갑니다.
+            </p>
+          </div>
+          <div class="legend" aria-label="그래프 범례">
+            <span><i class="swatch swatch-core"></i>심부 온도</span>
+            <span><i class="swatch swatch-ideal"></i>이상적인 조건</span>
+            <span><i class="swatch swatch-distal"></i>손발 피부</span>
+            <span><i class="swatch swatch-roomtemp"></i>방 온도</span>
+          </div>
+        </div>
+
+        <div class="control-panel temp-controls" aria-label="시뮬레이션 조절">
+          <label>
+            <span>계절</span>
+            <select id="season">
+              <option value="spring" selected>봄·가을</option>
+              <option value="summer">한여름</option>
+              <option value="winter">한겨울</option>
+            </select>
+          </label>
+          <label>
+            <span>22시 방 온도 <b id="roomStartValue"></b></span>
+            <input id="roomStart" type="range" min="12" max="32" step="0.5" value="22" />
+          </label>
+          <label>
+            <span>냉방</span>
+            <select id="coolingMode">
+              <option value="none" selected>없음</option>
+              <option value="fan">선풍기</option>
+              <option value="ac">에어컨</option>
+            </select>
+          </label>
+          <label>
+            <span>에어컨 설정 <b id="acSetValue"></b></span>
+            <input id="acSet" type="range" min="18" max="28" step="0.5" value="24" />
+          </label>
+          <label>
+            <span>옷차림</span>
+            <select id="outfit">
+              <option value="bare">속옷 차림</option>
+              <option value="light" selected>반팔 반바지</option>
+              <option value="pajama">긴팔 잠옷</option>
+              <option value="fleece">기모 수면잠옷</option>
+            </select>
+          </label>
+          <label>
+            <span>이불</span>
+            <select id="bedding">
+              <option value="sheet">홑이불</option>
+              <option value="summer" selected>여름 이불</option>
+              <option value="winter">겨울 이불</option>
+            </select>
+          </label>
+          <label>
+            <span>자기 전 씻기</span>
+            <select id="shower">
+              <option value="none" selected>안 함</option>
+              <option value="cool">미지근한 샤워</option>
+              <option value="warm">따뜻한 샤워</option>
+              <option value="bath">따뜻한 목욕</option>
+            </select>
+          </label>
+          <label>
+            <span>씻는 시각 <b id="showerBeforeValue"></b></span>
+            <input id="showerBefore" type="range" min="0" max="120" step="10" value="60" />
+          </label>
+          <label class="toggle-card">
+            <span>이불 밖으로 손발 <b id="handsOutValue"></b></span>
+            <input id="handsOut" type="checkbox" checked />
+          </label>
+          <label>
+            <span>재생 속도 <b id="speedValue"></b></span>
+            <input id="speed" type="range" min="0.5" max="4" step="0.1" value="1" />
+          </label>
+          <div class="temp-actions">
+            <div class="drag-help">
+              장면 속 <em>이불</em>을 누르면 손발을 넣고 뺄 수 있습니다.
+              그래프 위를 끌면 그 시각으로 이동합니다.
+              <b id="statusValue"></b>
+            </div>
+            <div class="button-row">
+              <button id="playToggle" type="button">재생</button>
+              <button id="restart" type="button">처음부터</button>
+              <button id="reset" type="button">되돌리기</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="temp-stage">
+          <div class="bed-frame">
+            <!-- 방 그림은 움직이지 않는 배경이라 마크업으로 두고, JS는 data-* 속성과
+                 몸의 fill(열화상 색)만 바꾼다. 좌표는 viewBox 760×440 기준이다. -->
+            <svg
+              id="bedScene"
+              class="bed-scene"
+              viewBox="0 0 760 440"
+              role="group"
+              aria-label="옆에서 본 침실. 사람은 열화상으로 그렸고, 이불을 누르면 손발을 넣고 뺄 수 있습니다."
+              data-season="spring"
+              data-cooling="none"
+              data-exposed="on"
+              data-asleep="off"
+              data-stage="before"
+            >
+              <defs>
+                <linearGradient id="wallTone" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0" stop-color="#131924" />
+                  <stop offset="1" stop-color="#1d2532" />
+                </linearGradient>
+                <linearGradient id="skyTone" x1="0" y1="0" x2="0" y2="1">
+                  <stop class="sky-top" offset="0" />
+                  <stop class="sky-bottom" offset="1" />
+                </linearGradient>
+                <linearGradient id="coolStream" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0" stop-color="#9fd8ff" stop-opacity="0.5" />
+                  <stop offset="1" stop-color="#9fd8ff" stop-opacity="0" />
+                </linearGradient>
+                <!-- 심부의 열이 몸통 안에서 번져 보이게 한다. 열화상의 뭉개진 느낌이 여기서 나온다 -->
+                <filter id="coreGlow" x="-40%" y="-80%" width="180%" height="260%">
+                  <feGaussianBlur stdDeviation="9" />
+                </filter>
+                <!-- 몸 전체에 얕게 건다. 부위를 도형으로 나눠 그렸다는 티(경계선)를 지우고
+                     실제 열화상처럼 온도가 이어져 보이게 하는 것이 목적이다 -->
+                <filter id="bodyBlur" x="-8%" y="-25%" width="116%" height="150%">
+                  <feGaussianBlur stdDeviation="2.6" />
+                </filter>
+                <clipPath id="windowGlass">
+                  <rect x="436" y="54" width="138" height="134" />
+                </clipPath>
+              </defs>
+
+              <!-- 방 -->
+              <rect x="0" y="0" width="760" height="338" fill="url(#wallTone)" />
+              <rect x="0" y="338" width="760" height="102" fill="#0d121a" />
+              <rect x="0" y="334" width="760" height="5" fill="#28313f" />
+
+              <!-- 창문. 계절은 하늘색과 창밖 장식으로만 드러낸다 -->
+              <g class="window">
+                <rect x="428" y="46" width="154" height="150" fill="#080d18" stroke="#3b4756" stroke-width="8" />
+                <g clip-path="url(#windowGlass)">
+                  <rect x="436" y="54" width="138" height="134" fill="url(#skyTone)" />
+                  <circle cx="470" cy="86" r="14" fill="#f4f0dd" opacity="0.85" />
+                  <g class="season-stars">
+                    <circle cx="520" cy="72" r="2" fill="#e8eeff" />
+                    <circle cx="548" cy="98" r="1.6" fill="#e8eeff" />
+                    <circle cx="500" cy="118" r="1.8" fill="#e8eeff" />
+                  </g>
+                  <g class="season-snow">
+                    <circle cx="452" cy="120" r="3" fill="#dfe9f5" />
+                    <circle cx="492" cy="150" r="2.6" fill="#dfe9f5" />
+                    <circle cx="536" cy="128" r="3" fill="#dfe9f5" />
+                    <circle cx="562" cy="166" r="2.4" fill="#dfe9f5" />
+                    <circle cx="470" cy="176" r="2.6" fill="#dfe9f5" />
+                  </g>
+                  <path class="season-tree" d="M 436 188 L 452 140 L 468 188 Z M 490 188 L 508 132 L 526 188 Z" fill="#101c1a" />
+                </g>
+                <path d="M 505 46 L 505 196 M 428 121 L 582 121" stroke="#3b4756" stroke-width="6" />
+              </g>
+
+              <!-- 벽걸이 에어컨. 냉방을 에어컨으로 두면 나타난다 -->
+              <g class="device device-ac">
+                <path d="M 700 92 L 640 200 L 600 200 L 676 92 Z" fill="url(#coolStream)" />
+                <rect x="600" y="30" width="146" height="54" rx="10" fill="#e6ebf1" />
+                <rect x="600" y="66" width="146" height="12" rx="4" fill="#b9c3cd" />
+                <rect x="612" y="70" width="122" height="5" rx="2" fill="#8f9aa6" />
+                <circle cx="732" cy="42" r="3.5" fill="#63c98a" />
+              </g>
+
+              <!-- 선풍기. 날개는 CSS에서 돌린다 -->
+              <g class="device device-fan">
+                <rect x="682" y="352" width="12" height="44" fill="#8a94a1" />
+                <ellipse cx="688" cy="398" rx="34" ry="8" fill="#6c7784" />
+                <circle cx="688" cy="330" r="40" fill="#141b25" stroke="#8a94a1" stroke-width="4" />
+                <g class="fan-blades">
+                  <path d="M 688 330 L 676 296 Q 700 292 704 314 Z" fill="#aab4c0" />
+                  <path d="M 688 330 L 718 348 Q 704 368 686 356 Z" fill="#aab4c0" />
+                  <path d="M 688 330 L 658 348 Q 672 368 690 356 Z" fill="#aab4c0" />
+                </g>
+                <circle cx="688" cy="330" r="7" fill="#d5dce4" />
+              </g>
+
+              <!-- 침대 -->
+              <rect x="132" y="196" width="26" height="150" rx="6" fill="#2b3543" />
+              <rect x="140" y="300" width="566" height="46" rx="6" fill="#222b38" />
+              <rect x="150" y="262" width="556" height="44" rx="10" fill="#38434f" />
+              <rect x="150" y="262" width="556" height="9" rx="4" fill="#44505e" />
+              <rect x="164" y="346" width="14" height="24" fill="#1a212c" />
+              <rect x="666" y="346" width="14" height="24" fill="#1a212c" />
+              <rect x="166" y="238" width="98" height="32" rx="15" fill="#4b5768" />
+
+              <!-- 사람. 아래 도형들의 fill은 JS가 온도에 따라 매 프레임 바꾼다.
+                   그리는 순서가 곧 앞뒤라, 다리 → 몸통 → 팔 → 머리 순으로 쌓는다 -->
+              <g class="body" filter="url(#bodyBlur)">
+                <rect id="partShin" x="570" y="234" width="92" height="36" rx="14" />
+                <rect id="partThigh" x="462" y="228" width="118" height="44" rx="16" />
+                <!-- 누우면 발끝이 위를 향한다. 이불 밖으로 내놓았을 때 발인 줄 알아보게 세워 둔다 -->
+                <path id="partFoot" d="M 646 270 L 646 232 Q 646 212 664 209 L 678 207 Q 692 208 692 226 L 692 270 Z" />
+                <rect id="partHip" x="404" y="222" width="70" height="50" rx="18" />
+                <rect id="partTorso" x="248" y="218" width="170" height="54" rx="20" />
+                <ellipse id="partCore" cx="332" cy="244" rx="58" ry="15" filter="url(#coreGlow)" />
+                <g class="limb-in">
+                  <rect id="partArm" x="268" y="256" width="128" height="24" rx="12" />
+                  <rect id="partForearm" x="388" y="258" width="64" height="22" rx="11" />
+                  <ellipse id="partHandIn" cx="462" cy="269" rx="18" ry="13" />
+                </g>
+                <rect id="partNeck" x="232" y="232" width="26" height="28" rx="9" />
+                <circle id="partHead" cx="212" cy="243" r="28" />
+              </g>
+              <!-- 눈은 흐림 밖에 둔다. 같이 뭉개면 떴는지 감았는지가 안 보인다 -->
+              <circle class="eye-open" cx="196" cy="236" r="3" fill="#141822" />
+              <path class="eye-shut" d="M 190 236 q 6 4 12 0" fill="none" stroke="#141822" stroke-width="2.5" stroke-linecap="round" />
+
+              <!-- 이불. 몸 위에 반투명으로 덮여, 열화상이 비쳐 보인다 -->
+              <g class="blanket">
+                <!-- 발까지 덮는 이불은 세워진 발 위로 부풀어 오른다 -->
+                <path
+                  class="blanket-cloth blanket-full"
+                  d="M 284 254 Q 292 232 322 230 L 618 230 Q 646 226 656 204 L 682 198 Q 708 200 708 238 L 708 302 L 284 302 Z"
+                />
+                <path
+                  class="blanket-cloth blanket-short"
+                  d="M 284 254 Q 292 232 322 230 L 610 230 Q 630 234 626 258 L 622 302 L 284 302 Z"
+                />
+                <!-- 아직 안 덮은 이불. 발치에 개켜 둔다. 몸 위로 올라오면 발을 가려 버린다 -->
+                <g class="blanket-folded">
+                  <rect x="594" y="284" width="116" height="46" rx="8" fill="#4d5a6d" />
+                  <path d="M 594 299 L 710 299 M 594 314 L 710 314" stroke="#3d4858" stroke-width="3" />
+                </g>
+              </g>
+
+              <!-- 이불 밖으로 꺼낸 팔. 이불보다 뒤에 있어야 위에 얹혀 보인다 -->
+              <g class="limb-out" filter="url(#bodyBlur)">
+                <rect id="partArmOut" x="266" y="216" width="24" height="54" rx="12" transform="rotate(-24 278 243)" />
+                <rect id="partForearmOut" x="292" y="208" width="76" height="22" rx="11" transform="rotate(-10 330 219)" />
+                <ellipse id="partHandOut" cx="382" cy="206" rx="19" ry="14" />
+              </g>
+
+              <!-- 손발에서 빠져나가는 열. 세기는 JS가 opacity로 준다 -->
+              <g id="heatHand" class="heat-plume" opacity="0">
+                <path d="M 366 188 c 7 -14 -7 -22 0 -36 c 7 -14 -7 -22 0 -36" />
+                <path d="M 384 190 c 7 -14 -7 -22 0 -36 c 7 -14 -7 -22 0 -36" />
+                <path d="M 400 194 c 7 -14 -7 -22 0 -36" />
+              </g>
+              <g id="heatFoot" class="heat-plume" opacity="0">
+                <path d="M 652 196 c 7 -14 -7 -22 0 -36 c 7 -14 -7 -22 0 -36" />
+                <path d="M 670 198 c 7 -14 -7 -22 0 -36 c 7 -14 -7 -22 0 -36" />
+                <path d="M 688 202 c 7 -14 -7 -22 0 -36" />
+              </g>
+
+              <!-- 잠들면 뜨는 표시 -->
+              <text class="sleep-z" x="150" y="196">z</text>
+              <text class="sleep-z is-small" x="128" y="172">z</text>
+
+              <!-- 협탁과 전자온도계 -->
+              <rect x="22" y="268" width="102" height="132" fill="#232c39" />
+              <rect x="16" y="258" width="114" height="12" rx="4" fill="#2f3a49" />
+              <rect x="62" y="258" width="20" height="10" fill="#2f3a49" />
+              <g class="thermometer">
+                <rect x="24" y="158" width="96" height="102" rx="10" fill="#0e141d" stroke="#3d4757" stroke-width="2" />
+                <rect x="31" y="166" width="82" height="86" rx="5" fill="#b7d7c4" />
+                <text id="thermClock" class="lcd-small" x="72" y="182">22:00</text>
+                <text id="thermRoom" class="lcd-big" x="64" y="212">22.0</text>
+                <text class="lcd-unit" x="97" y="212">°C</text>
+                <text class="lcd-small" x="72" y="228">방 온도</text>
+                <text id="thermCore" class="lcd-small is-core" x="72" y="245">심부 37.00°</text>
+              </g>
+
+              <!-- 클릭 영역. 방이 어두워도 읽혀야 하므로 맨 위에 둔다 -->
+              <g id="blanketHotspot" class="bed-hotspot" role="button" tabindex="0" aria-pressed="true">
+                <rect class="hotspot-ring" x="286" y="222" width="360" height="84" rx="10" />
+                <rect class="hotspot-hit" x="286" y="222" width="360" height="84" />
+                <rect class="pill" x="330" y="352" width="164" height="24" rx="12" />
+                <circle class="pill-dot" cx="346" cy="364" r="4" />
+                <text class="pill-text" id="blanketPillText" x="358" y="368">이불: 손발 내놓기</text>
+              </g>
+            </svg>
+
+            <p class="thermal-scale-caption">열화상 눈금</p>
+            <div class="thermal-scale" aria-hidden="true"></div>
+            <div class="thermal-scale-ticks"><span>22°</span><span>26°</span><span>30°</span><span>34°</span><span>37°</span></div>
+          </div>
+
+          <div class="temp-panel">
+            <div class="gauge">
+              <span class="gauge-label">말단 혈관 확장 <b id="perfusionValue">—</b></span>
+              <div class="gauge-track"><i id="perfusionBar" class="bar-perfusion"></i></div>
+              <small>피가 손발 표면까지 올라온 정도입니다. 따뜻한 물로 씻으면 여기가 먼저 올라갑니다.</small>
+            </div>
+            <div class="gauge">
+              <span class="gauge-label">열 방출 <b id="dumpValue">—</b></span>
+              <div class="gauge-track is-marked"><i id="dumpBar" class="bar-dump"></i></div>
+              <small>내보내야 하는 만큼을 100%로 봅니다. 눈금(가운데 선)을 넘겨야 심부 온도가 내려갑니다.</small>
+            </div>
+
+            <dl class="temp-readout">
+              <div>
+                <dt>심부 온도</dt>
+                <dd id="coreValue">—</dd>
+              </div>
+              <div>
+                <dt>22시 대비</dt>
+                <dd id="dropValue">—</dd>
+              </div>
+              <div>
+                <dt>지금 방 온도</dt>
+                <dd id="roomValue">—</dd>
+              </div>
+              <div>
+                <dt>손발 피부</dt>
+                <dd id="distalValue">—</dd>
+              </div>
+              <div>
+                <dt>잠들기까지</dt>
+                <dd id="latencyValue">—</dd>
+              </div>
+              <div>
+                <dt>밤중에 깸</dt>
+                <dd id="wakeValue">—</dd>
+              </div>
+            </dl>
+
+            <p class="source-caption">이상적인 침실 온도는 18.3도입니다 (생리·성별·나이에 따라 달라집니다).</p>
+          </div>
+        </div>
+
+        <div class="chart-frame temp-chart-frame">
+          <svg id="tempChart" role="img" aria-label="심부 온도와 피부·방 온도 곡선"></svg>
+        </div>
+
+        <p class="model-note">
+          체온 조절 연구의 경향을 옮긴 개념 모델입니다. 열 방출 계수, 이불의 단열값, 샤워 뒤 혈관 확장 곡선은
+          측정값이 아니라 장면이 의도한 대로 굴러가게 하려고 정한 값입니다.
+          다만 <b>이상적인 침실 온도 18.3도</b>와 <b>잠들려면 심부 온도가 1도쯤 떨어져야 한다</b>는 기준점은 책을 따랐습니다.
+          <span>참고: 매튜 워커 『우리는 왜 잠을 자야 할까』 2장 / Haghayegh et al., <i>Sleep Med Rev</i> 2019 (자기 전 온수욕과 수면 잠복기)</span>
+        </p>
+      </section>
+
+      <section class="insight-grid" aria-label="핵심 설명">
+        <article>
+          <span class="metric">01</span>
+          <h3>더운 방이 추운 방보다 나쁘다</h3>
+          <p>
+            추우면 이불을 덮거나 옷을 껴입어 <b>고칠 수 있습니다.</b>
+            더운 방에서는 벗을 것이 곧 떨어지고, 그다음부터는 열을 버릴 방법이 없습니다.
+            이불 속 공기가 피부 온도에 가까워지는 순간 심부의 열은 갈 곳을 잃습니다.
+          </p>
+        </article>
+        <article>
+          <span class="metric">02</span>
+          <h3>손발은 방열판이다</h3>
+          <p>
+            손과 발에는 몸통에 없는 혈관 구조가 있어서, 열려 있는 동안 심부의 열을 그대로 바깥으로 흘려보냅니다.
+            자다가 발을 이불 밖으로 내미는 것은 잠꼬대가 아니라 그 창구를 여는 동작입니다.
+            <b>이불 밖으로 손발</b>을 껐다 켜보면 곡선이 얼마나 달라지는지 보입니다.
+          </p>
+        </article>
+        <article>
+          <span class="metric">03</span>
+          <h3>따뜻한 물로 씻으면 몸은 식는다</h3>
+          <p>
+            앞뒤가 안 맞아 보이지만, 따뜻한 물은 피부 안쪽의 혈관을 열어 피를 표면으로 끌어올립니다.
+            그렇게 올라온 피가 열을 버리고 오면서 심부 온도가 오히려 <b>더 빨리</b> 떨어집니다.
+            다만 씻자마자 누우면 몸에 들어온 열이 아직 남아 있어, 한 시간쯤 여유를 두는 편이 낫습니다.
+          </p>
+        </article>
+      </section>
+    </main>
+
+    <script src="../nav.js"></script>
+    <script src="../shared.js"></script>
+    <script src="../temperature.js"></script>
+  </body>
+</html>

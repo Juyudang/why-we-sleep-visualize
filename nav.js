@@ -35,6 +35,12 @@ const visualizations = [
     description: "진정은 잠이 아닙니다. 잠들기 전 마신 술이 뇌파와 밤 구조를 어떻게 바꾸는지 봅니다.",
   },
   {
+    title: "밤에는 선선하게",
+    path: "temperature_sim",
+    ready: true,
+    description: "샤워, 방 온도, 선풍기와 에어컨을 바꿔가며 심부 온도가 1도 떨어지기까지를 재생해봅니다.",
+  },
+  {
     title: "카페인의 영향",
     path: null,
     ready: false,
