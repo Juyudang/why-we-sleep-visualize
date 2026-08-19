@@ -29,6 +29,12 @@ const visualizations = [
     description: "거실의 조명과 화면을 하나씩 꺼보면서 멜라토닌 분비와 잠들 확률이 어떻게 달라지는지 봅니다.",
   },
   {
+    title: "밤술과 가짜 잠",
+    path: "alcohol_sim",
+    ready: true,
+    description: "진정은 잠이 아닙니다. 잠들기 전 마신 술이 뇌파와 밤 구조를 어떻게 바꾸는지 봅니다.",
+  },
+  {
     title: "카페인의 영향",
     path: null,
     ready: false,

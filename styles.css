@@ -2036,3 +2036,400 @@ button + button {
     grid-column: span 1;
   }
 }
+
+/* ── 밤술과 가짜 잠 (alcohol_sim) ─────────────────────────
+   한 페이지에 스테이지가 셋(뇌파 비교 / 하룻밤 / 기억 실험)이라
+   .visual-stage를 여러 번 쓴다. 사이 간격만 .stage-gap으로 준다. */
+
+.stage-gap {
+  margin-top: 18px;
+}
+
+/* 알코올은 --plaque(갈색)로 통일한다. 카페인 오렌지와 헷갈리지 않게 각성만 오렌지를 쓴다 */
+.swatch-alcohol {
+  background: var(--plaque);
+}
+
+.swatch-natural {
+  background: var(--adenosine);
+}
+
+.swatch-wakeful,
+.swatch-arousal {
+  background: var(--caffeine);
+}
+
+.swatch-rem {
+  background: var(--circadian);
+}
+
+.swatch-deep {
+  background: var(--pressure);
+}
+
+/* ── 스테이지 1: 뇌파 비교 ── */
+
+.eeg-controls {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.eeg-readout {
+  display: grid;
+  grid-column: span 2;
+  align-content: start;
+  gap: 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 14px;
+  background: #fbfcfb;
+}
+
+.eeg-readout dl {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin: 0;
+}
+
+.eeg-readout dt {
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 800;
+  line-height: 1.35;
+  word-break: keep-all;
+}
+
+.eeg-readout dd {
+  margin: 4px 0 0;
+  font-size: 1.05rem;
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+}
+
+.eeg-readout p {
+  color: var(--muted);
+  font-size: 0.84rem;
+  font-weight: 700;
+  line-height: 1.5;
+  word-break: keep-all;
+}
+
+.eeg-frame {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 6px;
+  background: var(--surface);
+}
+
+#eegCanvas {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* ── 스테이지 2: 하룻밤 ── */
+
+.alcohol-stage {
+  display: grid;
+  grid-template-columns: 264px minmax(0, 1fr);
+  gap: 18px;
+  align-items: start;
+}
+
+.night-readout {
+  display: grid;
+  gap: 12px;
+}
+
+.night-readout > .brain-readout {
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 14px;
+  background: var(--surface);
+}
+
+.morning-card {
+  display: grid;
+  gap: 10px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 14px;
+  background: #fbfcfb;
+}
+
+.morning-card h3 {
+  font-size: 0.92rem;
+}
+
+.morning-card p {
+  color: var(--muted);
+  font-size: 0.8rem;
+  font-weight: 700;
+  line-height: 1.5;
+  word-break: keep-all;
+}
+
+/* REM 총량을 술 없는 밤과 견주는 막대. 채워진 만큼이 오늘 밤 REM이다 */
+.rem-bar {
+  height: 8px;
+  border-radius: 999px;
+  background: #e7edf2;
+  overflow: hidden;
+}
+
+.rem-bar i {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: var(--circadian);
+  transition: width 0.2s ease;
+}
+
+.alcohol-stage .chart-frame {
+  min-height: 0;
+  padding: 8px 6px;
+}
+
+#nightChart {
+  display: block;
+  width: 100%;
+  height: auto;
+  touch-action: none;
+  cursor: crosshair;
+}
+
+/* SVG 안쪽 */
+
+.alcohol-prebed {
+  fill: rgb(24 32 42 / 0.03);
+}
+
+.alcohol-grid {
+  stroke: var(--line);
+  stroke-width: 1;
+  stroke-dasharray: 2 5;
+}
+
+.alcohol-axis-tick,
+.alcohol-row-label {
+  fill: var(--muted);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.alcohol-axis-tick {
+  text-anchor: middle;
+}
+
+.alcohol-row-label {
+  text-anchor: end;
+}
+
+.alcohol-panel-title {
+  fill: var(--ink);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.alcohol-bedtime {
+  stroke: var(--ink);
+  stroke-width: 1.2;
+  stroke-dasharray: 4 4;
+  opacity: 0.55;
+}
+
+.alcohol-marker-label {
+  fill: var(--muted);
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.alcohol-threshold {
+  stroke: var(--plaque);
+  stroke-width: 1;
+  stroke-dasharray: 5 4;
+  opacity: 0.6;
+}
+
+.alcohol-threshold-label {
+  fill: var(--plaque);
+  font-size: 10px;
+  font-weight: 700;
+  text-anchor: end;
+}
+
+.alcohol-bac-fill {
+  fill: rgb(140 90 60 / 0.16);
+}
+
+.alcohol-bac-line {
+  fill: none;
+  stroke: var(--plaque);
+  stroke-width: 2.2;
+}
+
+.alcohol-drink-line {
+  stroke: var(--plaque);
+  stroke-width: 1;
+  stroke-dasharray: 3 3;
+}
+
+.alcohol-drink-dot {
+  fill: var(--plaque);
+}
+
+.alcohol-stage-row {
+  fill: rgb(24 32 42 / 0.03);
+}
+
+.alcohol-stage-row.row-wake {
+  fill: rgb(201 130 43 / 0.08);
+}
+
+.alcohol-stage-row.row-rem {
+  fill: rgb(134 87 201 / 0.09);
+}
+
+.alcohol-stage-row.row-n2 {
+  fill: rgb(24 32 42 / 0.06);
+}
+
+.alcohol-stage-row.row-n3 {
+  fill: rgb(36 95 196 / 0.1);
+}
+
+.alcohol-hypnogram-line {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 1.6;
+  stroke-linejoin: round;
+}
+
+/* 짧은 각성을 지운 밤을 겹쳐 볼 때, 실제 밤은 뒤로 물린다 */
+.alcohol-hypnogram-line.is-ghost {
+  stroke: var(--muted);
+  stroke-width: 1;
+  opacity: 0.35;
+}
+
+.alcohol-rem-bar {
+  stroke: var(--circadian);
+  stroke-width: 5;
+  stroke-linecap: round;
+}
+
+.alcohol-arousal {
+  stroke: var(--caffeine);
+  stroke-width: 1.4;
+  opacity: 0.4;
+}
+
+.alcohol-arousal.is-remembered {
+  stroke-width: 2.4;
+  opacity: 1;
+}
+
+.alcohol-rem-baseline {
+  fill: none;
+  stroke: var(--muted);
+  stroke-width: 1.6;
+  stroke-dasharray: 5 5;
+}
+
+.alcohol-rem-line {
+  fill: none;
+  stroke: var(--circadian);
+  stroke-width: 2.4;
+}
+
+/* 곡선 끝값 라벨은 선 위에 얹히므로 흰 테두리로 글자를 띄운다 */
+.alcohol-inline-label {
+  fill: var(--circadian);
+  font-size: 11px;
+  font-weight: 800;
+  text-anchor: end;
+  paint-order: stroke;
+  stroke: var(--surface);
+  stroke-width: 3px;
+  stroke-linejoin: round;
+}
+
+.alcohol-inline-label.is-baseline {
+  fill: var(--muted);
+}
+
+.alcohol-playhead {
+  stroke: var(--ink);
+  stroke-width: 1.2;
+  opacity: 0.55;
+}
+
+/* ── 스테이지 3: 기억 실험 ── */
+
+.memory-frame {
+  min-height: 0;
+  padding: 8px 6px;
+}
+
+#memoryChart {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.memory-group {
+  fill: var(--ink);
+  font-size: 13px;
+  font-weight: 900;
+  text-anchor: end;
+}
+
+.memory-detail {
+  fill: var(--muted);
+  font-size: 11px;
+  font-weight: 700;
+  text-anchor: end;
+}
+
+.memory-track {
+  fill: rgb(24 32 42 / 0.05);
+}
+
+.memory-bar {
+  fill: var(--plaque);
+  opacity: 0.72;
+}
+
+.memory-bar.is-control {
+  fill: var(--adenosine);
+  opacity: 0.85;
+}
+
+.memory-value {
+  fill: var(--ink);
+  font-size: 13px;
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+}
+
+.memory-note {
+  fill: #ffffff;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.memory-caption {
+  fill: var(--muted);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+@media (max-width: 980px) {
+  .alcohol-stage {
+    grid-template-columns: 1fr;
+  }
+
+  .eeg-readout {
+    grid-column: span 4;
+  }
+}
