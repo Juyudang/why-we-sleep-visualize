@@ -23,6 +23,12 @@ const visualizations = [
     description: "자는 동안 뇌에 쌓인 아밀로이드가 어떻게 줄어드는지, 수면 단계마다 속도가 어떻게 달라지는지 봅니다.",
   },
   {
+    title: "밤술과 가짜 잠",
+    path: "alcohol_sim",
+    ready: true,
+    description: "진정은 잠이 아닙니다. 잠들기 전 마신 술이 뇌파와 밤 구조를 어떻게 바꾸는지 봅니다.",
+  },
+  {
     title: "카페인의 영향",
     path: null,
     ready: false,

@@ -1,0 +1,276 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Why We Sleep Visual Notes</title>
+    <link rel="stylesheet" href="../styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="topbar" aria-labelledby="page-title">
+        <div>
+          <p class="eyebrow">Visual Note 04</p>
+          <h1 id="page-title">밤술과 가짜 잠</h1>
+        </div>
+        <div class="chapter-pill">Chapter: Alcohol</div>
+      </section>
+
+      <section class="visual-stage" aria-labelledby="eeg-title">
+        <div class="chart-header">
+          <div>
+            <h2 id="eeg-title">1. 진정은 잠이 아니다</h2>
+            <p>
+              술을 마시고 뻗은 상태를 우리는 "잘 잤다"고 부릅니다. 하지만 그때 뇌에서 나오는 전기 신호는
+              자연스러운 잠의 신호와 다릅니다. 아래는 같은 12초를 세 가지 상태에서 본 뇌파입니다.
+              잔을 늘려보면 <b>느린 파도는 오히려 커지는데</b>, 그 위에 얹혀 있어야 할
+              <b>수면방추(sleep spindle)</b>가 먼저 지워집니다. 겉보기 깊이와 잠의 기능이 따로 논다는 뜻입니다.
+            </p>
+          </div>
+          <div class="legend" aria-label="뇌파 범례">
+            <span><i class="swatch swatch-wakeful"></i>각성</span>
+            <span><i class="swatch swatch-natural"></i>자연스러운 잠</span>
+            <span><i class="swatch swatch-alcohol"></i>알코올 진정</span>
+          </div>
+        </div>
+
+        <div class="control-panel eeg-controls" aria-label="뇌파 비교 조절">
+          <label>
+            <span>잠들기 전 마신 양 <b id="eegDoseValue"></b></span>
+            <input id="eegDose" type="range" min="0" max="4" step="0.25" value="0" />
+            <small>0잔이면 아래 두 파형은 같습니다. 잔을 늘리면 세 번째 줄만 달라집니다.</small>
+          </label>
+          <label class="toggle-card">
+            <span>파형 흐르기 <b id="eegPlayValue"></b></span>
+            <input id="eegPlay" type="checkbox" checked />
+          </label>
+          <div class="eeg-readout">
+            <dl>
+              <div>
+                <dt>느린 파도(델타) 세기</dt>
+                <dd id="deltaValue">—</dd>
+              </div>
+              <div>
+                <dt>수면방추 밀도</dt>
+                <dd id="spindleValue">—</dd>
+              </div>
+              <div>
+                <dt>5.5Hz 세타 성분</dt>
+                <dd id="thetaValue">—</dd>
+              </div>
+            </dl>
+            <p id="eegVerdict">—</p>
+          </div>
+        </div>
+
+        <div class="eeg-frame">
+          <canvas
+            id="eegCanvas"
+            width="900"
+            height="330"
+            role="img"
+            aria-label="각성, 자연스러운 잠, 알코올 진정의 뇌파 비교"
+          ></canvas>
+        </div>
+
+        <p class="model-note">
+          실제 측정 기록이 아니라 각 상태의 특징을 합성한 모식 파형입니다.
+          술을 마신 뒤 전반부 NREM에서 델타가 커지는 것, 방추 대역(시그마)이 줄어드는 것,
+          고용량에서 잠과는 다른 5.5Hz 세타 상태가 나타나는 것이 각각 아래 연구에서 보고된 방향입니다.
+          <span>
+            참고: Colrain, Nicholas &amp; Baker, <i>Handb Clin Neurol</i> 2014 /
+            Chan et al., <i>Alcohol Clin Exp Res</i> 2015 /
+            Abrahao, Pava &amp; Lovinger, <i>Neuropharmacology</i> 2020 (설치류 고용량)
+          </span>
+        </p>
+      </section>
+
+      <section class="visual-stage stage-gap" aria-labelledby="night-title">
+        <div class="chart-header">
+          <div>
+            <h2 id="night-title">2. 밤술이 하룻밤을 바꾸는 방식</h2>
+            <p>
+              술은 잠을 두 가지 방식으로 더 망가뜨립니다. 하나는 <b>밤을 조각내는 것</b>,
+              다른 하나는 <b>REM(꿈잠)을 밀어내는 것</b>입니다.
+              알코올이 분해되어 농도가 떨어지는 후반부에 각성이 몰리는데,
+              대부분 몇십 초짜리라 아침에는 거의 기억나지 않습니다.
+              오른쪽 아래 <em>기억하는 각성만 보기</em>를 켜면 본인이 아는 밤과 실제 밤이 얼마나 다른지 보입니다.
+            </p>
+          </div>
+          <div class="legend" aria-label="그래프 범례">
+            <span><i class="swatch swatch-alcohol"></i>혈중알코올</span>
+            <span><i class="swatch swatch-rem"></i>REM</span>
+            <span><i class="swatch swatch-deep"></i>깊은 잠(N3)</span>
+            <span><i class="swatch swatch-arousal"></i>각성</span>
+          </div>
+        </div>
+
+        <div class="control-panel alcohol-controls" aria-label="시뮬레이션 조절">
+          <label>
+            <span>마신 양 <b id="drinksValue"></b></span>
+            <input id="drinks" type="range" min="0" max="5" step="0.5" value="3" />
+            <small>표준잔 1잔 = 순수 알코올 약 14g (맥주 355ml / 와인 150ml / 소주 2잔 남짓)</small>
+          </label>
+          <label>
+            <span>마신 시각 <b id="aheadValue"></b></span>
+            <input id="drinkAhead" type="range" min="0" max="3" step="0.25" value="0.5" />
+            <small>0이면 취침 직전, 3이면 잠들기 세 시간 전에 다 마신 경우입니다.</small>
+          </label>
+          <label>
+            <span>재생 속도 <b id="speedValue"></b></span>
+            <input id="speed" type="range" min="0.5" max="3" step="0.1" value="1" />
+          </label>
+          <label class="toggle-card">
+            <span>기억하는 각성만 보기 <b id="rememberedValue"></b></span>
+            <input id="showRemembered" type="checkbox" />
+          </label>
+          <div class="sleep-controls">
+            <div class="drag-help">
+              재생을 누르면 자정을 지나 아침까지 밤이 흘러갑니다. 그래프 위를 끌면 원하는 시각으로 바로 이동합니다.
+              <em>마신 시각</em>을 앞으로 당길수록 잠들 때의 혈중 농도가 낮아져 REM이 덜 눌리고,
+              깨는 시점도 새벽이 아니라 초저녁 쪽으로 옮겨갑니다.
+              <b id="statusValue"></b>
+            </div>
+            <div class="button-row">
+              <button id="playToggle" type="button">재생</button>
+              <button id="restart" type="button">처음부터</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="alcohol-stage">
+          <div class="night-readout">
+            <dl class="brain-readout">
+              <div>
+                <dt>시각</dt>
+                <dd id="clockValue">—</dd>
+              </div>
+              <div>
+                <dt>혈중알코올</dt>
+                <dd id="bacValue">—</dd>
+              </div>
+              <div>
+                <dt>지금 단계</dt>
+                <dd id="stageValue">—</dd>
+              </div>
+              <div>
+                <dt>여기까지 REM</dt>
+                <dd id="remValue">—</dd>
+              </div>
+              <div>
+                <dt>실제로 깬 횟수</dt>
+                <dd id="wakeValue">—</dd>
+              </div>
+              <div>
+                <dt>기억에 남는 각성</dt>
+                <dd id="rememberValue">—</dd>
+              </div>
+            </dl>
+
+            <div class="morning-card">
+              <h3>아침에 남는 것</h3>
+              <dl class="brain-readout">
+                <div>
+                  <dt>잠들기까지</dt>
+                  <dd id="summarySol">—</dd>
+                </div>
+                <div>
+                  <dt>실제로 잔 시간</dt>
+                  <dd id="summaryTst">—</dd>
+                </div>
+                <div>
+                  <dt>깊은 잠(N3)</dt>
+                  <dd id="summaryN3">—</dd>
+                </div>
+                <div>
+                  <dt>REM 총량</dt>
+                  <dd id="summaryRem">—</dd>
+                </div>
+              </dl>
+              <div class="rem-bar" aria-hidden="true">
+                <i id="remBarFill"></i>
+              </div>
+              <p id="summaryVerdict">—</p>
+            </div>
+          </div>
+
+          <div class="chart-frame">
+            <svg id="nightChart" role="img" aria-label="혈중알코올 농도, 수면 단계, 누적 REM 그래프"></svg>
+          </div>
+        </div>
+
+        <p class="model-note">
+          하룻밤 구조를 손으로 만든 개념 모델입니다. 각성 횟수·REM 감소량 같은 숫자는
+          체감을 위해 조정한 값이지 특정 연구에서 측정된 수치가 아닙니다.
+          다만 움직이는 <b>방향</b>은 아래 연구들이 보고한 것과 같게 맞췄습니다 —
+          낮은 용량에서도 REM이 먼저 지연·감소하고, 서파는 전반부에 늘고,
+          농도가 떨어지는 후반부에 각성이 몰립니다. 혈중 농도는 Widmark 근사(체중 70kg 기준)입니다.
+          <span>
+            참고: Ebrahim et al., <i>Alcohol Clin Exp Res</i> 2013 /
+            Gardiner et al., <i>Sleep Med Rev</i> 2025 (메타분석) /
+            Colrain, Nicholas &amp; Baker, <i>Handb Clin Neurol</i> 2014
+          </span>
+        </p>
+      </section>
+
+      <section class="visual-stage stage-gap" aria-labelledby="memory-title">
+        <div class="chart-header">
+          <div>
+            <h2 id="memory-title">3. 이틀 뒤에 마신 술도 사흘 전 기억을 지운다</h2>
+            <p>
+              책이 소개하는 실험입니다. 학생들에게 문법 규칙 같은 절차 기억 과제를 가르친 뒤 세 집단으로 나눴습니다.
+              한 집단은 계속 푹 자고, 한 집단은 <b>학습한 그날 밤</b>에 술을 마시고,
+              마지막 집단은 <b>이틀 밤을 푹 자고 나서 셋째 날 밤</b>에 술을 마셨습니다.
+              7일째에 모두 맨정신으로 시험을 봤습니다.
+            </p>
+          </div>
+        </div>
+
+        <div class="chart-frame memory-frame">
+          <svg id="memoryChart" role="img" aria-label="음주 시점에 따른 기억 유지율 비교"></svg>
+        </div>
+
+        <p class="model-note">
+          출처가 있는 데이터입니다. 위 시뮬레이터의 수치와는 별개입니다.
+          실험 설계는 Smith &amp; Smith (2003)이고, 막대에 적힌 백분율은 그 실험을 워커가 책에서 소개하며 쓴 서술
+          ("50% 이상 망각", "40% 망각")을 옮긴 것입니다. 원논문의 보고 형식과 표현 단위는 다를 수 있습니다.
+          <span>참고: Smith &amp; Smith, <i>SLEEP</i> 2003;26(2):185–191</span>
+        </p>
+      </section>
+
+      <section class="insight-grid" aria-label="핵심 설명">
+        <article>
+          <span class="metric">01</span>
+          <h3>진정 ≠ 잠</h3>
+          <p>
+            알코올은 진정제입니다. 진정 상태의 뇌파는 자연스러운 잠보다 마취의 가벼운 형태에 가깝습니다.
+            느린 파도가 커져도 그 위에서 기억을 옮기는 방추가 사라지면,
+            "깊어 보이는 잠"이 "깊은 잠"의 일을 하지는 않습니다.
+          </p>
+        </article>
+        <article>
+          <span class="metric">02</span>
+          <h3>모르고 지나가는 각성</h3>
+          <p>
+            알코올이 분해되며 농도가 떨어지는 후반부에 각성이 몰립니다.
+            대부분 1분이 안 되는 짧은 각성이라 아침에 기억나지 않습니다.
+            "푹 잤는데 왜 피곤하지"의 상당 부분이 여기서 나옵니다.
+          </p>
+        </article>
+        <article>
+          <span class="metric">03</span>
+          <h3>REM은 미뤄지고 줄어든다</h3>
+          <p>
+            REM은 낮은 용량에서도 가장 먼저 밀립니다. 농도가 떨어진 뒤 일부가 되돌아오지만(반동),
+            그사이 각성으로 밤이 짧아져 총량은 회복되지 않습니다.
+            오랜 세월 쌓인 REM 압력이 깨어 있는 의식으로 밀려드는 극단이 <b>떨림 섬망</b>입니다.
+          </p>
+        </article>
+      </section>
+    </main>
+
+    <script src="../nav.js"></script>
+    <script src="../shared.js"></script>
+    <script src="../alcohol.js"></script>
+  </body>
+</html>
