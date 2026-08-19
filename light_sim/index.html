@@ -1,0 +1,433 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Why We Sleep Visual Notes</title>
+    <link rel="stylesheet" href="../styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="topbar" aria-labelledby="page-title">
+        <div>
+          <p class="eyebrow">Visual Note 04</p>
+          <h1 id="page-title">저녁의 빛</h1>
+        </div>
+        <div class="chapter-pill">Chapter 13: 아이패드, 공장 사이렌, 밤술</div>
+      </section>
+
+      <section class="visual-stage" aria-label="저녁 조명과 멜라토닌 시뮬레이터">
+        <div class="chart-header">
+          <div>
+            <h2>거실의 불을 하나씩 꺼봅니다</h2>
+            <p>
+              밤에 눈으로 들어오는 <b>청색광</b>이 시교차상핵에 "아직 낮"이라고 알립니다.
+              그래서 중요한 것은 방이 얼마나 밝은지가 아니라, <b>눈에 얼마나 닿는지</b>와 <b>그 빛이 얼마나 푸른지</b>입니다.
+              천장 조명은 밝지만 멀고 아이패드는 어둡지만 30cm 앞이라, 둘의 차이가 생각보다 작습니다.
+              방 안의 불빛과 창문을 클릭해 꺼보세요.
+            </p>
+          </div>
+          <div class="legend" aria-label="그래프 범례">
+            <span><i class="swatch swatch-melatonin"></i>지금 조명</span>
+            <span><i class="swatch swatch-dark"></i>완전한 어둠</span>
+            <span><i class="swatch swatch-exposure"></i>빛 노출 구간</span>
+          </div>
+        </div>
+
+        <div class="control-panel light-controls" aria-label="시뮬레이션 조절">
+          <label>
+            <span>자기 전 노출 시간 <b id="exposureValue"></b></span>
+            <input id="exposure" type="range" min="0.5" max="4" step="0.25" value="2" />
+          </label>
+          <label>
+            <span>화면 밝기 <b id="brightnessValue"></b></span>
+            <input id="brightness" type="range" min="20" max="100" step="5" value="100" />
+          </label>
+          <label class="toggle-card">
+            <span>화면 야간 모드 <b id="nightShiftValue"></b></span>
+            <input id="nightShift" type="checkbox" />
+          </label>
+          <label class="toggle-card">
+            <span>암막 커튼 <b id="blackoutValue"></b></span>
+            <input id="blackout" type="checkbox" />
+          </label>
+          <label class="toggle-card">
+            <span>5일 연속 반복 <b id="repeatValue"></b></span>
+            <input id="repeatNights" type="checkbox" />
+          </label>
+          <div class="sleep-controls">
+            <div class="drag-help">
+              장면 속 불빛을 클릭하면 꺼지고, 창문을 클릭하면 커튼이 쳐집니다.
+              아이패드를 클릭하면 <em>종이책</em>으로 바뀝니다.
+              커튼은 기본이 일반 커튼이라 쳐도 빛이 배어 들어옵니다. 위의 <em>암막 커튼</em>으로 바꿔보세요.
+              오른쪽 목록의 줄을 눌러도 같은 동작을 합니다.
+              <b id="statusValue"></b>
+            </div>
+            <div class="button-row">
+              <button id="allOff" type="button">모두 끄기</button>
+              <button id="reset" type="button">되돌리기</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="light-stage">
+          <div class="room-frame">
+            <!-- 방 그림은 움직이지 않는 배경이라 마크업으로 두고,
+                 JS는 data-* 속성과 어둡기 값만 바꾼다. 그리기 코드는 차트에만 있다. -->
+            <svg
+              id="roomScene"
+              class="room-scene"
+              viewBox="0 0 680 440"
+              role="group"
+              aria-label="거실 단면. 조명을 클릭해 끄거나 켤 수 있습니다."
+              data-ceiling="on"
+              data-lamp="on"
+              data-mood="off"
+              data-screen="tablet"
+              data-night-shift="off"
+              data-curtain="open"
+              data-curtain-kind="sheer"
+            >
+              <defs>
+                <linearGradient id="wallPaint" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0" stop-color="#e9e3d9" />
+                  <stop offset="1" stop-color="#d5ccbf" />
+                </linearGradient>
+                <linearGradient id="nightSky" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0" stop-color="#0a1230" />
+                  <stop offset="1" stop-color="#22304f" />
+                </linearGradient>
+                <!-- stop-color를 var()로 쓰면 프레젠테이션 속성이라 브라우저가 무시한다.
+                     빛 색 토큰은 styles.css의 .stop-* / .tint-* 규칙에서 꽂는다 -->
+                <linearGradient id="ceilingBeam" x1="0" y1="0" x2="0" y2="1">
+                  <stop class="stop-cool" offset="0" stop-opacity="0.9" />
+                  <stop class="stop-cool" offset="1" stop-opacity="0" />
+                </linearGradient>
+                <linearGradient id="lampBeam" x1="0" y1="0" x2="0" y2="1">
+                  <stop class="stop-warm" offset="0" stop-opacity="0.85" />
+                  <stop class="stop-warm" offset="1" stop-opacity="0" />
+                </linearGradient>
+                <linearGradient id="windowBeam" x1="0" y1="0" x2="0" y2="1">
+                  <stop class="stop-outside" offset="0" stop-opacity="0.55" />
+                  <stop class="stop-outside" offset="1" stop-opacity="0" />
+                </linearGradient>
+                <radialGradient id="moodGlow">
+                  <stop class="stop-amber" offset="0" stop-opacity="0.85" />
+                  <stop class="stop-amber" offset="1" stop-opacity="0" />
+                </radialGradient>
+                <radialGradient id="screenGlow">
+                  <stop class="stop-screen" offset="0" stop-opacity="0.8" />
+                  <stop class="stop-screen" offset="1" stop-opacity="0" />
+                </radialGradient>
+                <radialGradient id="streetGlow">
+                  <stop offset="0" stop-color="#eaf3ff" stop-opacity="0.95" />
+                  <stop offset="1" stop-color="#8fb4ff" stop-opacity="0" />
+                </radialGradient>
+                <clipPath id="windowGlass">
+                  <rect x="496" y="96" width="128" height="148" />
+                </clipPath>
+              </defs>
+
+              <!-- 1층: 방 구조와 가구. 여기 있는 것은 스스로 빛나지 않으므로 어둡기 막에 덮인다 -->
+              <g class="room-structure">
+                <rect x="24" y="28" width="632" height="340" fill="url(#wallPaint)" />
+                <rect x="24" y="28" width="632" height="11" fill="#cdc4b7" />
+                <rect x="24" y="360" width="632" height="8" fill="#6f573f" />
+                <rect x="24" y="368" width="632" height="46" fill="#8d6f52" />
+                <ellipse cx="300" cy="392" rx="196" ry="15" fill="#7a5f45" />
+
+                <!-- 창틀. 커튼을 쳐도 남는 부분이라 구조 층에 둔다 -->
+                <rect
+                  x="496"
+                  y="96"
+                  width="128"
+                  height="148"
+                  fill="#101a30"
+                  stroke="#b5aa9c"
+                  stroke-width="9"
+                />
+                <rect x="470" y="84" width="182" height="7" rx="3" fill="#8b8073" />
+
+                <!-- 커튼. 닫으면 가로로 늘어나 창을 덮는다.
+                     천 색은 종류(일반/암막)에 따라 달라지므로 styles.css에서 칠한다 -->
+                <g class="curtain curtain-left">
+                  <rect class="curtain-cloth" x="470" y="91" width="24" height="172" />
+                  <path class="curtain-fold" d="M 476 91 L 476 263 M 482 91 L 482 263 M 488 91 L 488 263" />
+                </g>
+                <g class="curtain curtain-right">
+                  <rect class="curtain-cloth" x="626" y="91" width="24" height="172" />
+                  <path class="curtain-fold" d="M 632 91 L 632 263 M 638 91 L 638 263 M 644 91 L 644 263" />
+                </g>
+
+                <!-- 소파 -->
+                <rect x="148" y="232" width="34" height="108" rx="11" fill="#5b6b7d" />
+                <rect x="148" y="296" width="198" height="44" rx="12" fill="#6b7d91" />
+                <rect x="316" y="266" width="30" height="74" rx="10" fill="#5b6b7d" />
+                <rect x="158" y="338" width="11" height="18" rx="3" fill="#43352a" />
+                <rect x="326" y="338" width="11" height="18" rx="3" fill="#43352a" />
+
+                <!-- 소파에 앉은 사람 (오른쪽을 보고 있다) -->
+                <g class="person">
+                  <path d="M 286 292 L 306 290 L 320 348 L 298 352 Z" fill="#3a4557" />
+                  <path d="M 296 346 L 334 352 L 334 362 L 294 360 Z" rx="4" fill="#2b3240" />
+                  <rect x="192" y="282" width="102" height="22" rx="11" fill="#3a4557" />
+                  <path d="M 186 296 L 196 230 Q 200 212 218 208 L 242 214 Q 254 220 250 244 L 238 298 Z" fill="#445063" />
+                  <rect x="238" y="200" width="17" height="18" fill="#d5a483" />
+                  <!-- 옆모습이라 머리카락 원을 뒤통수 쪽으로 조금 밀고 그 위에 얼굴 원을 얹는다 -->
+                  <circle cx="247" cy="193" r="22" fill="#2b2521" />
+                  <circle cx="253" cy="199" r="19" fill="#e0b08d" />
+                  <circle cx="247" cy="203" r="4" fill="#cf9d7b" />
+                  <path
+                    d="M 242 228 L 272 258 L 312 246"
+                    fill="none"
+                    stroke="#445063"
+                    stroke-width="14"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                  <!-- 종이책 모드일 때만 보인다. 스스로 빛나지 않으니 구조 층에 있어야 방이 어두우면 같이 어두워진다 -->
+                  <g class="paper-book">
+                    <path d="M 306 240 L 340 226 L 356 240 L 322 254 Z" fill="#f2ece0" />
+                    <path d="M 306 240 L 322 254 L 322 260 L 306 246 Z" fill="#cfc6b6" />
+                    <path d="M 356 240 L 322 254 L 322 260 L 356 246 Z" fill="#ddd4c4" />
+                  </g>
+                </g>
+
+                <!-- 사이드 테이블과 무드등 -->
+                <rect x="392" y="300" width="92" height="9" rx="3" fill="#6f573f" />
+                <rect x="399" y="309" width="8" height="58" fill="#5e4a35" />
+                <rect x="470" y="309" width="8" height="58" fill="#5e4a35" />
+                <rect x="424" y="288" width="22" height="13" rx="4" fill="#8a6a4a" />
+                <path d="M 419 289 Q 419 261 435 261 Q 451 261 451 289 Z" fill="#b9925f" />
+
+                <!-- 플로어 스탠드 -->
+                <ellipse cx="86" cy="366" rx="28" ry="7" fill="#6a5f55" />
+                <rect x="83" y="190" width="7" height="176" fill="#7a6f63" />
+                <path d="M 58 146 L 114 146 L 124 192 L 48 192 Z" fill="#a98a55" />
+
+                <!-- 천장 LED 등기구 -->
+                <rect x="250" y="30" width="112" height="11" rx="3" fill="#b4bbc3" />
+              </g>
+
+              <!-- 2층: 방 전체 어둡기. 불이 꺼질수록 진해진다 (JS가 opacity만 바꾼다) -->
+              <rect id="roomShade" x="24" y="28" width="632" height="386" fill="#05070f" opacity="0" />
+
+              <!-- 3층: 스스로 빛나는 것들. 어둡기 막 위에 있어야 방이 깜깜해도 제대로 빛난다 -->
+              <g class="room-lights">
+                <g class="light-source source-window">
+                  <g clip-path="url(#windowGlass)">
+                    <rect x="496" y="96" width="128" height="148" fill="url(#nightSky)" />
+                    <circle cx="524" cy="124" r="11" fill="#f2f0e2" opacity="0.9" />
+                    <path d="M 496 206 L 528 206 L 528 172 L 556 172 L 556 206 L 600 206 L 600 186 L 624 186 L 624 244 L 496 244 Z" fill="#0b1226" />
+                    <path
+                      d="M 506 214 h 7 v 8 h -7 Z M 520 214 h 7 v 8 h -7 Z M 536 182 h 6 v 7 h -6 Z M 566 216 h 7 v 8 h -7 Z M 606 196 h 7 v 8 h -7 Z"
+                      fill="#ffd98a"
+                      opacity="0.85"
+                    />
+                    <circle cx="588" cy="150" r="34" fill="url(#streetGlow)" />
+                    <rect x="586" y="150" width="5" height="60" fill="#1b2440" />
+                    <rect x="578" y="144" width="21" height="8" rx="4" fill="#dfe9ff" />
+                  </g>
+                  <path d="M 560 96 L 560 244 M 496 170 L 624 170" stroke="#b5aa9c" stroke-width="7" />
+                  <path d="M 500 244 L 620 244 L 556 368 L 398 368 Z" fill="url(#windowBeam)" class="beam" />
+                </g>
+
+                <g class="light-source source-ceiling">
+                  <path d="M 256 42 L 356 42 L 452 368 L 160 368 Z" fill="url(#ceilingBeam)" class="beam" />
+                  <rect x="254" y="38" width="104" height="7" rx="3" fill="#f0f7ff" />
+                  <ellipse class="tint-cool" cx="306" cy="44" rx="72" ry="16" opacity="0.5" />
+                </g>
+
+                <g class="light-source source-lamp">
+                  <path d="M 50 194 L 122 194 L 158 368 L 14 368 Z" fill="url(#lampBeam)" class="beam" />
+                  <path class="tint-warm" d="M 58 146 L 114 146 L 124 192 L 48 192 Z" opacity="0.55" />
+                  <ellipse class="tint-warm" cx="86" cy="192" rx="40" ry="12" opacity="0.75" />
+                </g>
+
+                <g class="light-source source-mood">
+                  <circle cx="435" cy="278" r="62" fill="url(#moodGlow)" />
+                  <path class="tint-amber" d="M 419 289 Q 419 261 435 261 Q 451 261 451 289 Z" />
+                </g>
+
+                <!-- 아이패드. 손에 들린 각도로 기울여 둔다 -->
+                <g class="light-source source-screen" transform="rotate(-20 332 240)">
+                  <circle cx="332" cy="240" r="66" fill="url(#screenGlow)" />
+                  <rect x="310" y="208" width="45" height="64" rx="5" fill="#20242e" />
+                  <rect class="tint-screen" x="314" y="212" width="37" height="56" rx="3" />
+                </g>
+                <!-- 화면이 얼굴을 비추는 몫 -->
+                <ellipse class="face-light tint-screen" cx="268" cy="206" rx="11" ry="10" opacity="0.32" />
+              </g>
+
+              <!-- 4층: 클릭 영역과 이름표. 방이 아무리 어두워도 읽혀야 하므로 맨 위에 둔다 -->
+              <g class="room-hotspots">
+                <g class="light-hotspot hotspot-ceiling" data-source="ceiling" role="button" tabindex="0" aria-pressed="true">
+                  <rect class="hotspot-ring" x="238" y="22" width="140" height="40" rx="10" />
+                  <rect class="hotspot-hit" x="238" y="22" width="140" height="40" />
+                  <rect class="pill" x="250" y="58" width="108" height="23" rx="11" />
+                  <circle class="pill-dot" cx="264" cy="70" r="4" />
+                  <text class="pill-text" x="276" y="74">천장 LED</text>
+                </g>
+
+                <g class="light-hotspot hotspot-lamp" data-source="lamp" role="button" tabindex="0" aria-pressed="true">
+                  <rect class="hotspot-ring" x="40" y="138" width="94" height="60" rx="10" />
+                  <rect class="hotspot-hit" x="40" y="138" width="94" height="60" />
+                  <rect class="pill" x="42" y="110" width="92" height="23" rx="11" />
+                  <circle class="pill-dot" cx="56" cy="122" r="4" />
+                  <text class="pill-text" x="68" y="126">스탠드</text>
+                </g>
+
+                <g class="light-hotspot hotspot-screen" data-source="screen" role="button" tabindex="0" aria-pressed="true">
+                  <rect class="hotspot-ring" x="298" y="200" width="72" height="84" rx="10" />
+                  <rect class="hotspot-hit" x="298" y="200" width="72" height="84" />
+                  <rect class="pill" x="300" y="170" width="98" height="23" rx="11" />
+                  <circle class="pill-dot" cx="314" cy="182" r="4" />
+                  <text class="pill-text" id="screenPillText" x="326" y="186">아이패드</text>
+                </g>
+
+                <g class="light-hotspot hotspot-mood" data-source="mood" role="button" tabindex="0" aria-pressed="false">
+                  <rect class="hotspot-ring" x="410" y="256" width="52" height="50" rx="10" />
+                  <rect class="hotspot-hit" x="410" y="256" width="52" height="50" />
+                  <rect class="pill" x="390" y="228" width="92" height="23" rx="11" />
+                  <circle class="pill-dot" cx="404" cy="240" r="4" />
+                  <text class="pill-text" x="416" y="244">무드등</text>
+                </g>
+
+                <g class="light-hotspot hotspot-window" data-source="window" role="button" tabindex="0" aria-pressed="true">
+                  <rect class="hotspot-ring" x="486" y="86" width="148" height="168" rx="10" />
+                  <rect class="hotspot-hit" x="486" y="86" width="148" height="168" />
+                  <rect class="pill" x="504" y="54" width="110" height="23" rx="11" />
+                  <circle class="pill-dot" cx="518" cy="66" r="4" />
+                  <text class="pill-text" x="530" y="70">창문 커튼</text>
+                </g>
+              </g>
+            </svg>
+          </div>
+
+          <div class="light-panel">
+            <div class="gauge">
+              <span class="gauge-label">멜라토닌 분비율 <b id="melatoninValue">—</b></span>
+              <div class="gauge-track"><i id="melatoninBar" class="bar-melatonin"></i></div>
+              <small>완전한 어둠에서 나올 양을 100%로 본 값입니다.</small>
+            </div>
+            <div class="gauge">
+              <span class="gauge-label">20분 안에 잠들 확률 <b id="chanceValue">—</b></span>
+              <div class="gauge-track"><i id="chanceBar" class="bar-chance"></i></div>
+              <small>지금 조명 그대로 23시에 누웠을 때입니다.</small>
+            </div>
+
+            <p class="source-caption">광원별로 눈에 닿는 청색광 (멜라놉 럭스)</p>
+            <ul class="source-list" id="sourceList" aria-label="광원별 청색광 기여">
+              <li>
+                <button type="button" data-source="ceiling" aria-pressed="true">
+                  <span class="source-name"><i class="source-dot"></i>천장 LED 조명</span>
+                  <span class="source-state">—</span>
+                  <span class="source-bar"><i></i></span>
+                  <span class="source-value">—</span>
+                </button>
+              </li>
+              <li>
+                <button type="button" data-source="lamp" aria-pressed="true">
+                  <span class="source-name"><i class="source-dot"></i>노란 스탠드</span>
+                  <span class="source-state">—</span>
+                  <span class="source-bar"><i></i></span>
+                  <span class="source-value">—</span>
+                </button>
+              </li>
+              <li>
+                <button type="button" data-source="screen" aria-pressed="true">
+                  <span class="source-name"><i class="source-dot"></i>아이패드</span>
+                  <span class="source-state">—</span>
+                  <span class="source-bar"><i></i></span>
+                  <span class="source-value">—</span>
+                </button>
+              </li>
+              <li>
+                <button type="button" data-source="window" aria-pressed="true">
+                  <span class="source-name"><i class="source-dot"></i>창밖 가로등</span>
+                  <span class="source-state">—</span>
+                  <span class="source-bar"><i></i></span>
+                  <span class="source-value">—</span>
+                </button>
+              </li>
+              <li>
+                <button type="button" data-source="mood" aria-pressed="false">
+                  <span class="source-name"><i class="source-dot"></i>무드등</span>
+                  <span class="source-state">—</span>
+                  <span class="source-bar"><i></i></span>
+                  <span class="source-value">—</span>
+                </button>
+              </li>
+            </ul>
+
+            <dl class="light-readout">
+              <div>
+                <dt>눈에 닿는 청색광</dt>
+                <dd id="mediValue">—</dd>
+              </div>
+              <div>
+                <dt>멜라토닌 분비 지연</dt>
+                <dd id="delayValue">—</dd>
+              </div>
+              <div>
+                <dt>잠들기까지</dt>
+                <dd id="latencyValue">—</dd>
+              </div>
+              <div>
+                <dt>렘수면 손실</dt>
+                <dd id="remValue">—</dd>
+              </div>
+            </dl>
+          </div>
+        </div>
+
+        <div class="chart-frame light-chart-frame">
+          <svg id="melatoninChart" role="img" aria-label="저녁 멜라토닌 분비 곡선"></svg>
+        </div>
+
+        <p class="model-note">
+          빛–멜라토닌 억제 연구의 경향을 옮긴 개념 모델입니다. 광원별 럭스와 멜라놉 비율, 억제 곡선의 계수는
+          실제 측정값이 아니라 장면이 의도한 대로 굴러가게 하려고 정한 값입니다.
+          다만 "아이패드 2시간 → 약 23% 억제", "며칠 뒤까지 남는 90분 지연" 같은 기준점은 아래 연구에 맞춰 두었습니다.
+          <span>
+            참고: Wood et al., <i>Appl Ergon</i> 2013 / Chang et al., <i>PNAS</i> 2015 / Zeitzer et al., <i>J Physiol</i> 2000
+          </span>
+        </p>
+      </section>
+
+      <section class="insight-grid" aria-label="핵심 설명">
+        <article>
+          <span class="metric">01</span>
+          <h3>밝기보다 색과 거리</h3>
+          <p>
+            시교차상핵에 신호를 보내는 광수용체는 청색 스펙트럼의 짧은 파장에 가장 민감합니다.
+            그래서 같은 럭스라도 청색 LED는 백열등보다 두 배 가까이 멜라토닌을 억제합니다.
+            여기에 거리가 곱해집니다. 천장 조명을 끄고 아이패드만 남겨도 청색광이 절반밖에 안 줄어드는 이유입니다.
+          </p>
+        </article>
+        <article>
+          <span class="metric">02</span>
+          <h3>줄어드는 게 아니라 늦춰진다</h3>
+          <p>
+            빛은 멜라토닌의 양만 깎는 것이 아니라 <b>분비가 시작되는 시각</b>을 뒤로 밉니다.
+            아래 곡선에서 점선(완전한 어둠)과 실선의 가로 간격이 그 지연입니다.
+            취침 시각은 그대로인데 몸의 밤만 늦게 시작되니, 누워서 뒤척이는 시간이 길어집니다.
+          </p>
+        </article>
+        <article>
+          <span class="metric">03</span>
+          <h3>디지털 숙취</h3>
+          <p>
+            아이패드로 읽고 잔 참가자들은 렘수면을 상당량 잃었고, 다음 날 내내 덜 안정되고 졸렸습니다.
+            더 신경 쓰이는 것은 그다음입니다. 아이패드를 그만 쓴 뒤에도 며칠 동안 멜라토닌 상승이 90분씩 늦었습니다.
+            <b>5일 연속 반복</b>을 켜면 이 몫이 더해집니다.
+          </p>
+        </article>
+      </section>
+    </main>
+
+    <script src="../nav.js"></script>
+    <script src="../shared.js"></script>
+    <script src="../light.js"></script>
+  </body>
+</html>

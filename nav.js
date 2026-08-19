@@ -23,6 +23,12 @@ const visualizations = [
     description: "자는 동안 뇌에 쌓인 아밀로이드가 어떻게 줄어드는지, 수면 단계마다 속도가 어떻게 달라지는지 봅니다.",
   },
   {
+    title: "저녁의 빛",
+    path: "light_sim",
+    ready: true,
+    description: "거실의 조명과 화면을 하나씩 꺼보면서 멜라토닌 분비와 잠들 확률이 어떻게 달라지는지 봅니다.",
+  },
+  {
     title: "밤술과 가짜 잠",
     path: "alcohol_sim",
     ready: true,
