@@ -19,47 +19,72 @@
       <section class="visual-stage" aria-label="아데노신과 수면압력 시뮬레이터">
         <div class="chart-header">
           <div>
-            <h2>72시간 동안의 흐름</h2>
+            <h2>사흘 동안의 흐름</h2>
             <p>
-              아데노신은 깨어 있을 때 쌓이고, 하루주기는 sin 곡선으로 오르내립니다.
-              자동수면을 켜면 임계값에 닿을 때 잠들고, 강제수면 모드에서는 차트 위를 드래그해 원하는 수면 구간을 만들 수 있습니다.
+              깨어 있는 동안 아데노신이 차오릅니다. 몸시계는 그 반대편에서 잠들지 못하게 붙잡는
+              <b>각성 신호</b>를 만듭니다. 아데노신이 <b>잠드는 선</b>을 위로 뚫으면 잠들고,
+              <b>깨는 선</b> 아래로 내려오면 깹니다. 기본값은 23:00에 잠들어 07:00에 깨는 하루입니다.
             </p>
           </div>
           <div class="legend" aria-label="그래프 범례">
             <span><i class="swatch swatch-adenosine"></i>아데노신</span>
-            <span><i class="swatch swatch-circadian"></i>하루주기</span>
-            <span><i class="swatch swatch-pressure"></i>수면압력</span>
+            <span><i class="swatch swatch-circadian"></i>잠드는 선 · 깨는 선</span>
+            <span><i class="swatch swatch-pressure"></i>졸림 지수</span>
           </div>
+        </div>
+
+        <div class="chart-frame sp-frame">
+          <svg id="sleepChart" role="img" aria-labelledby="chart-title chart-desc"></svg>
+        </div>
+        <p class="sp-hint">그래프 위에 마우스를 올리면 그 시각의 값을 읽을 수 있습니다.</p>
+
+        <div class="sp-summary" aria-label="사흘 요약">
+          <div><span>잠든 횟수</span><b id="sumNights">—</b></div>
+          <div><span>평균 수면 길이</span><b id="sumLength">—</b></div>
+          <div><span>평균 취침 시각</span><b id="sumBedtime">—</b></div>
+          <div><span>평균 기상 시각</span><b id="sumWaketime">—</b></div>
         </div>
 
         <div class="control-panel" aria-label="시뮬레이션 조절">
           <label>
-            <span>아데노신 쌓이는 속도 <b id="rateValue"></b></span>
-            <input id="adenosineRate" type="range" min="0.02" max="0.1" step="0.005" value="0.055" />
+            <span>아데노신 차오르는 시상수 <b id="riseTauValue"></b></span>
+            <input id="riseTau" type="range" min="10" max="24" step="0.2" value="18.2" />
+            <small>깨어 있을 때 남은 거리의 63%를 메우는 데 걸리는 시간. 표준값 18.2시간</small>
           </label>
           <label>
-            <span>아데노신 시작지점 <b id="initialAdenosineValue"></b></span>
-            <input id="initialAdenosine" type="range" min="0" max="1.6" step="0.025" value="0.18" />
+            <span>아데노신 빠지는 시상수 <b id="fallTauValue"></b></span>
+            <input id="fallTau" type="range" min="2" max="8" step="0.1" value="4.2" />
+            <small>자는 동안의 시상수. 표준값 4.2시간이라 8시간을 자도 15%가 남는다</small>
           </label>
           <label>
-            <span>수면 중 감소 속도 <b id="decayValue"></b></span>
-            <input id="sleepDecayRate" type="range" min="0.1" max="1.2" step="0.025" value="0.72" />
+            <span>아침에 남아 있던 아데노신 <b id="initialAdenosineValue"></b></span>
+            <input id="initialAdenosine" type="range" min="0" max="60" step="1" value="9" />
+            <small>푹 잔 다음 날 아침이 9%. 올리면 어젯밤 빚을 지고 시작한다</small>
           </label>
           <label>
-            <span>하루주기 간격 <b id="cycleValue"></b></span>
-            <input id="cycleInterval" type="range" min="20" max="28" step="0.05" value="24.25" />
+            <span>몸시계 주기 <b id="periodValue"></b></span>
+            <input id="cyclePeriod" type="range" min="23" max="25.5" step="0.1" value="24.2" />
+            <small>사람의 고유 주기는 평균 24.2시간. 24보다 길어서 매일 조금씩 밀린다</small>
           </label>
           <label>
-            <span>하루주기 시작지점 <b id="phaseValue"></b></span>
-            <input id="cycleStart" type="range" min="0" max="24" step="0.5" value="1" />
+            <span>각성 신호가 가장 낮은 시각 <b id="troughClockValue"></b></span>
+            <input id="troughClock" type="range" min="0" max="23" step="1" value="5" />
+            <small>심부 체온 최저점 무렵. 이 값을 옮기면 하루가 통째로 이동한다</small>
           </label>
           <label>
-            <span>수면 임계값 <b id="thresholdValue"></b></span>
-            <input id="sleepThreshold" type="number" min="0" step="0.025" value="0.45" />
+            <span>잠드는 선 높이 <b id="sleepThresholdValue"></b></span>
+            <input id="sleepThreshold" type="range" min="-10" max="25" step="1" value="0" />
+            <small>각성 신호에서 이만큼 위. 0이면 두 곡선이 만나는 순간 잠든다</small>
+          </label>
+          <label>
+            <span>깨는 선 깊이 <b id="wakeGapValue"></b></span>
+            <input id="wakeGap" type="range" min="5" max="40" step="1" value="20" />
+            <small>각성 신호에서 이만큼 아래. 깊을수록 오래 자야 도달한다</small>
           </label>
           <label>
             <span>수면 한계 시간 <b id="sleepLimitValue"></b></span>
-            <input id="sleepLimit" type="range" min="2" max="14" step="0.25" value="9" />
+            <input id="sleepLimit" type="range" min="4" max="12" step="0.5" value="9" />
+            <small>알람에 해당한다. 깨는 선에 닿지 않아도 여기서 일어난다</small>
           </label>
           <label class="toggle-card">
             <span>자동수면 <b id="autoSleepValue"></b></span>
@@ -76,33 +101,44 @@
             </div>
             <div class="button-row">
               <button id="clearForcedSleep" type="button">강제수면 모두 해제</button>
+              <button id="resetDefaults" type="button">기본값으로</button>
             </div>
           </div>
-        </div>
-
-        <div class="chart-frame">
-          <svg id="sleepChart" role="img" aria-labelledby="chart-title chart-desc"></svg>
-          <div class="axis-label axis-y">상대 수치</div>
         </div>
       </section>
 
       <section class="insight-grid" aria-label="핵심 설명">
         <article>
           <span class="metric">01</span>
-          <h3>아데노신 누적</h3>
-          <p>깨어 있는 동안 빠르게 쌓이다가 점점 완만해지는 곡선으로 증가합니다.</p>
+          <h3>차오르는 쪽과 붙잡는 쪽</h3>
+          <p>
+            잠은 아데노신 하나로 결정되지 않습니다. 깨어 있는 시간이 밀어 올리는 힘과, 시각에 따라
+            오르내리는 각성 신호가 만나는 자리에서 취침 시각이 정해집니다.
+          </p>
         </article>
         <article>
           <span class="metric">02</span>
-          <h3>하루주기</h3>
-          <p>sin 곡선으로 표현한 각성 신호입니다. 간격과 시작지점을 바꾸면 잠드는 시간이 이동합니다.</p>
+          <h3>저녁에 가장 말똥한 이유</h3>
+          <p>
+            각성 신호는 매끈한 sin이 아니라 저녁까지 완만히 오르다 새벽에 급락하는 비대칭 곡선입니다.
+            그래서 하루 종일 아데노신이 쌓였는데도 저녁 9시쯤엔 오히려 정신이 듭니다.
+          </p>
         </article>
         <article>
           <span class="metric">03</span>
-          <h3>자동수면</h3>
-          <p>자동수면은 임계값 기준으로 발생하고, 강제수면은 설정한 시작과 기간을 우선 적용합니다.</p>
+          <h3>8시간을 자도 다 안 빠진다</h3>
+          <p>
+            빠지는 시상수가 4.2시간이라 8시간을 자도 잠들 때의 15%가 남습니다. 이 잔량이 다음 날의
+            출발점이고, 덜 자면 그만큼 높은 데서 하루를 시작하게 됩니다.
+          </p>
         </article>
       </section>
+
+      <p class="sp-note">
+        수치는 Borbély의 2-프로세스 모형(1982)과 Daan·Beersma·Borbély(1984)의 시상수·파형을 따랐지만,
+        기본값이 23:00 취침 / 07:00 기상으로 맞아떨어지도록 각성 신호의 크기는 역산해 넣은 값입니다.
+        개인차와 실제 측정치를 대신하지 않습니다.
+      </p>
     </main>
 
     <script src="../nav.js"></script>
