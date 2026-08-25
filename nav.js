@@ -41,6 +41,12 @@ const visualizations = [
     description: "샤워, 방 온도, 선풍기와 에어컨을 바꿔가며 심부 온도가 1도 떨어지기까지를 재생해봅니다.",
   },
   {
+    title: "열두 가지 비결",
+    path: "habits_sim",
+    ready: true,
+    description: "부록의 열두 가지입니다. 전체·제목만·한 줄 목록으로 바꿔 보고 인쇄, 이미지, 텍스트로 꺼내 갑니다.",
+  },
+  {
     title: "카페인의 영향",
     path: null,
     ready: false,
