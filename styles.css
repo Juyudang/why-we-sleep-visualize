@@ -543,23 +543,6 @@ button + button {
   cursor: crosshair;
 }
 
-.axis-label {
-  position: absolute;
-  color: var(--muted);
-  font-size: 0.78rem;
-  font-weight: 800;
-}
-
-.axis-y {
-  top: 18px;
-  left: 18px;
-}
-
-.axis-x {
-  right: 20px;
-  bottom: 16px;
-}
-
 .insight-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -596,15 +579,6 @@ button + button {
   fill: var(--sleep);
 }
 
-.forced-sleep-band {
-  cursor: pointer;
-  fill: var(--forced-sleep);
-}
-
-.wake-band {
-  fill: var(--wake);
-}
-
 .grid-line {
   stroke: #e7edf2;
   stroke-width: 1;
@@ -627,66 +601,19 @@ button + button {
   font-weight: 800;
 }
 
-.path-adenosine,
-.path-pressure,
-.path-circadian {
+/* microsleep.js가 쓰는 곡선 */
+.path-pressure {
   fill: none;
+  stroke: var(--pressure);
   stroke-linecap: round;
   stroke-linejoin: round;
   stroke-width: 4;
-}
-
-.pressure-fill {
-  stroke: none;
-}
-
-.path-adenosine {
-  stroke: var(--adenosine);
-}
-
-.path-pressure {
-  stroke: var(--pressure);
-}
-
-.path-circadian {
-  stroke: var(--circadian);
-}
-
-.threshold-line {
-  stroke: var(--pressure);
-  stroke-dasharray: 6 7;
-  stroke-width: 1.5;
 }
 
 .now-line {
   stroke: var(--ink);
   stroke-dasharray: 5 7;
   stroke-width: 1.5;
-}
-
-.forced-line {
-  stroke: var(--caffeine);
-  stroke-dasharray: 4 6;
-  stroke-width: 1.5;
-}
-
-.sleep-label {
-  fill: #5b6e8c;
-  font-size: 12px;
-  font-weight: 900;
-}
-
-.manual-label {
-  fill: var(--ink);
-  font-size: 12px;
-  font-weight: 900;
-  pointer-events: none;
-}
-
-.drag-preview {
-  fill: var(--forced-sleep);
-  opacity: 0.64;
-  pointer-events: none;
 }
 
 /* ── Visual Note 02: 졸음운전 ────────────────────────────── */
@@ -3066,6 +2993,278 @@ select {
   .temp-controls .temp-actions {
     grid-column: span 1;
     grid-template-columns: 1fr;
+  }
+}
+
+/* ── Visual Note 01 개편: 아데노신과 수면압력 ────────────────
+   두 패널(위=두 힘, 아래=졸림 지수)을 한 SVG 안에서 그린다.
+   sp- 접두사를 붙인 건 .sleep-band 같은 이름을 다른 시각화가 이미 쓰고 있어서다. */
+
+/* 이 차트는 세로로 길다. 공용 .chart-frame의 고정 높이를 쓰면 글자가 눌린다 */
+.sp-frame {
+  min-height: 0;
+  padding: 6px;
+}
+
+#sleepChart {
+  display: block;
+  width: 100%;
+  height: auto;
+  touch-action: none;
+}
+
+.forced-draw-mode #sleepChart {
+  cursor: crosshair;
+}
+
+.sp-hint {
+  margin: 8px 2px 0;
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+/* 사흘을 한 줄로 요약한다. 곡선만 보고는 "그래서 몇 시간 잤는데?"에 답이 안 된다 */
+.sp-summary {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+  margin: 16px 0 18px;
+}
+
+.sp-summary div {
+  display: grid;
+  gap: 8px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 14px;
+  background: #fbfcfb;
+}
+
+.sp-summary span {
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-weight: 800;
+}
+
+.sp-summary b {
+  color: var(--pressure);
+  font-size: 1.42rem;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.sp-note {
+  margin-top: 14px;
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-weight: 700;
+  line-height: 1.6;
+  word-break: keep-all;
+}
+
+/* ── SVG 안쪽 ── */
+
+/* 밤 시간대. 곡선이 몇 시쯤인지 축을 안 봐도 짐작되게 하는 바탕 */
+.sp-night {
+  fill: #eef1f7;
+}
+
+/* 실제로 잠든 구간. 밤 바탕보다 확실히 진해야 "밤 ≠ 잠"이 구분된다 */
+.sp-band {
+  fill: var(--sleep);
+  opacity: 0.85;
+}
+
+.sp-band-forced {
+  cursor: pointer;
+  fill: var(--forced-sleep);
+}
+
+.sp-band-label {
+  fill: #7a5a2e;
+  font-size: 12px;
+  font-weight: 900;
+  pointer-events: none;
+}
+
+.sp-band-sub {
+  fill: rgb(122 90 46 / 0.72);
+  font-size: 11px;
+  font-weight: 700;
+  pointer-events: none;
+}
+
+.sp-grid {
+  stroke: #dde5ec;
+  stroke-width: 1;
+}
+
+.sp-grid-faint {
+  stroke: #eef2f6;
+}
+
+.sp-grid-strong {
+  stroke: #b9c6d3;
+}
+
+.sp-daybreak {
+  stroke: var(--muted);
+  stroke-dasharray: 3 4;
+  stroke-width: 1;
+}
+
+.sp-day-label {
+  fill: var(--muted);
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.sp-tick {
+  fill: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.sp-axis-title {
+  fill: var(--ink);
+  font-size: 12px;
+  font-weight: 900;
+}
+
+/* 잠드는 선과 깨는 선 사이. 여기 있으면 자지도 깨지도 않는다 */
+.sp-threshold-band {
+  fill: var(--circadian);
+  opacity: 0.1;
+  stroke: none;
+}
+
+/* 잠드는 선을 넘어선 아데노신. 이 면적이 '넘쳐버린 수면압력'이다 */
+.sp-overflow {
+  fill: var(--adenosine);
+  opacity: 0.22;
+  stroke: none;
+}
+
+.sp-line {
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.sp-line-adenosine {
+  stroke: var(--adenosine);
+  stroke-width: 3.6;
+}
+
+.sp-line-sleep {
+  stroke: var(--circadian);
+  stroke-width: 2.4;
+}
+
+/* 깨는 선은 잠드는 선의 짝이라 같은 색에 점선으로만 구분한다 */
+.sp-line-wake {
+  stroke: var(--circadian);
+  stroke-dasharray: 5 6;
+  stroke-width: 2;
+}
+
+.sp-line-doze {
+  stroke: var(--pressure);
+  stroke-width: 2.6;
+}
+
+.sp-end-label {
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.sp-end-adenosine {
+  fill: var(--adenosine);
+}
+
+.sp-end-sleep,
+.sp-end-wake {
+  fill: var(--circadian);
+}
+
+.sp-end-doze {
+  fill: var(--muted);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.sp-forced-line {
+  stroke: var(--caffeine);
+  stroke-dasharray: 4 6;
+  stroke-width: 1.5;
+}
+
+.sp-drag-preview {
+  fill: var(--forced-sleep);
+  opacity: 0.64;
+  pointer-events: none;
+}
+
+/* ── 값 읽기 ── */
+/* 전부 pointer-events를 꺼야 한다. 안 그러면 커서가 읽기 상자에 얹히는 순간
+   pointerleave가 떠서 상자가 깜빡인다 */
+.sp-crosshair,
+.sp-dot,
+.sp-readout {
+  pointer-events: none;
+}
+
+.sp-crosshair {
+  stroke: var(--ink);
+  stroke-dasharray: 3 4;
+  stroke-width: 1;
+}
+
+.sp-dot {
+  stroke: #fff;
+  stroke-width: 2;
+}
+
+.sp-dot-adenosine {
+  fill: var(--adenosine);
+}
+
+.sp-dot-sleep {
+  fill: var(--circadian);
+}
+
+.sp-dot-doze {
+  fill: var(--pressure);
+}
+
+.sp-readout-box {
+  fill: #fff;
+  stroke: var(--line);
+  stroke-width: 1;
+}
+
+.sp-readout-title {
+  fill: var(--ink);
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.sp-readout-key {
+  fill: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.sp-readout-value {
+  fill: var(--ink);
+  font-size: 12px;
+  font-weight: 900;
+}
+
+@media (max-width: 900px) {
+  .sp-summary {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 

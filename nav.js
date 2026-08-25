@@ -8,7 +8,7 @@ const visualizations = [
     title: "아데노신과 수면압력",
     path: "sleep_pressure_sim",
     ready: true,
-    description: "아데노신 누적, 하루주기, 자동수면과 강제수면을 조절하며 수면압력의 변화를 봅니다.",
+    description: "차오르는 아데노신이 몸시계가 만든 잠드는 선을 뚫는 순간이 취침 시각입니다. 하루가 어떻게 무너지는지 봅니다.",
   },
   {
     title: "움직이는 대포",
