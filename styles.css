@@ -2997,13 +2997,81 @@ select {
 }
 
 /* ── Visual Note 01 개편: 아데노신과 수면압력 ────────────────
-   두 패널(위=두 힘, 아래=졸림 지수)을 한 SVG 안에서 그린다.
+   세 패널(위=두 힘, 가운데=졸림 지수, 아래=졸림 색띠)을 한 SVG 안에서 그린다.
    sp- 접두사를 붙인 건 .sleep-band 같은 이름을 다른 시각화가 이미 쓰고 있어서다. */
 
-/* 이 차트는 세로로 길다. 공용 .chart-frame의 고정 높이를 쓰면 글자가 눌린다 */
+/* 이 페이지만 제목을 줄인다. 슬라이더를 만지는 동안 그래프가 화면에 남아 있어야 하는데,
+   공용 h1(최대 4.7rem)이 세로 공간의 10% 가까이를 먹는다. */
+.sp-page h1 {
+  font-size: clamp(1.7rem, 2.6vw, 2.5rem);
+}
+
+.sp-page .topbar {
+  margin-bottom: 14px;
+}
+
+/* 고정 덩어리가 스테이지 폭을 꽉 채워야 아래 내용이 옆으로 비쳐 지나가지 않는다.
+   그래서 패딩을 스테이지가 아니라 안쪽 두 덩어리가 각자 갖는다. */
+.sp-stage {
+  padding: 0;
+  overflow: visible;
+}
+
+/* 화면 위에 붙는 그래프. top 값은 .site-nav의 min-height(52px)와 맞춘 것이다.
+   이게 이 개편의 핵심이다 — 예전에는 슬라이더까지 스크롤하면 그래프가 화면 밖으로 나가서
+   값을 바꿔도 무엇이 달라졌는지 볼 수가 없었다. */
+.sp-chart-pane {
+  position: sticky;
+  top: 52px;
+  z-index: 4;
+  border-bottom: 1px solid var(--line);
+  border-radius: 8px 8px 0 0;
+  padding: 16px 20px 14px;
+  background: var(--surface);
+}
+
+.sp-control-pane {
+  padding: 14px 20px 20px;
+}
+
+.sp-pane-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 10px;
+}
+
+/* 제목과 설명을 한 줄에 눕힌다. 위아래로 쌓으면 그래프가 40px쯤 아래로 밀린다 */
+.sp-pane-lead {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  min-width: 0;
+}
+
+.sp-pane-lead h2 {
+  flex: 0 0 auto;
+  font-size: 1.12rem;
+}
+
+.sp-pane-lead p {
+  color: var(--muted);
+  font-size: 0.86rem;
+  line-height: 1.55;
+  word-break: keep-all;
+}
+
+.sp-page .legend {
+  flex: 0 0 auto;
+  min-width: 0;
+  font-size: 0.84rem;
+}
+
+/* 이 차트는 가로로 길다. 공용 .chart-frame의 고정 높이를 쓰면 아래가 비어 버린다 */
 .sp-frame {
   min-height: 0;
-  padding: 6px;
+  padding: 5px;
 }
 
 #sleepChart {
@@ -3018,40 +3086,107 @@ select {
 }
 
 .sp-hint {
-  margin: 8px 2px 0;
+  margin: 0 0 9px;
   color: var(--muted);
   font-size: 0.82rem;
   font-weight: 700;
+  line-height: 1.5;
+  word-break: keep-all;
 }
 
-/* 사흘을 한 줄로 요약한다. 곡선만 보고는 "그래서 몇 시간 잤는데?"에 답이 안 된다 */
+.sp-hint b {
+  color: var(--ink);
+}
+
+/* 사흘을 한 줄로 요약한다. 곡선만 보고는 "그래서 몇 시간 잤는데?"에 답이 안 된다.
+   고정 덩어리 안에 두었으므로 슬라이더를 만지는 동안 숫자가 실시간으로 따라 바뀐다. */
 .sp-summary {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 14px;
-  margin: 16px 0 18px;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 10px;
 }
 
 .sp-summary div {
   display: grid;
-  gap: 8px;
+  gap: 4px;
   border: 1px solid var(--line);
   border-radius: 8px;
-  padding: 14px;
+  padding: 7px 9px;
   background: #fbfcfb;
 }
 
 .sp-summary span {
   color: var(--muted);
-  font-size: 0.82rem;
+  font-size: 0.74rem;
   font-weight: 800;
+  word-break: keep-all;
 }
 
 .sp-summary b {
   color: var(--pressure);
-  font-size: 1.42rem;
+  font-size: 1.12rem;
   font-weight: 900;
   line-height: 1;
+}
+
+/* 슬라이더 카드. 고정된 그래프 아래로 첫 줄이 바로 보여야 해서 공용 카드보다 촘촘하다 */
+.sp-sliders {
+  gap: 9px;
+  margin-bottom: 9px;
+}
+
+.sp-sliders label {
+  gap: 6px;
+  padding: 9px 12px;
+}
+
+.sp-sliders span {
+  font-size: 0.83rem;
+}
+
+.sp-sliders small {
+  font-size: 0.71rem;
+  line-height: 1.4;
+}
+
+.sp-control-foot {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 168px)) minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: stretch;
+}
+
+.sp-control-foot .toggle-card {
+  display: grid;
+  gap: 8px;
+  align-content: space-between;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 10px 12px;
+  background: #fbfcfb;
+  font-size: 0.83rem;
+  font-weight: 800;
+}
+
+/* 토글 카드가 .control-panel 밖으로 나왔으므로 그쪽 span/b 규칙을 다시 적어 준다 */
+.sp-control-foot .toggle-card span {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.sp-control-foot .toggle-card b {
+  flex: 0 0 auto;
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+.sp-control-foot .drag-help {
+  padding: 10px 12px;
+  font-size: 0.78rem;
+  line-height: 1.45;
 }
 
 .sp-note {
@@ -3132,17 +3267,25 @@ select {
   font-weight: 900;
 }
 
-/* 잠드는 선과 깨는 선 사이. 여기 있으면 자지도 깨지도 않는다 */
+/* 잠드는 선과 깨는 선 사이. 여기 있으면 자지도 깨지도 않는다.
+   이 띠가 오르내리는 덩어리 자체가 몸시계의 하루주기다 */
 .sp-threshold-band {
   fill: var(--circadian);
-  opacity: 0.1;
+  opacity: 0.11;
+  stroke: none;
+}
+
+/* 아데노신을 바닥까지 채운다. 선만 그리면 "쌓인다"는 게 부피로 안 읽힌다 */
+.sp-adenosine-fill {
+  fill: var(--adenosine);
+  opacity: 0.13;
   stroke: none;
 }
 
 /* 잠드는 선을 넘어선 아데노신. 이 면적이 '넘쳐버린 수면압력'이다 */
 .sp-overflow {
   fill: var(--adenosine);
-  opacity: 0.22;
+  opacity: 0.28;
   stroke: none;
 }
 
@@ -3154,24 +3297,78 @@ select {
 
 .sp-line-adenosine {
   stroke: var(--adenosine);
-  stroke-width: 3.6;
+  stroke-width: 3.4;
+}
+
+/* 각성 신호(프로세스 C) 본체. 문턱 두 선은 이 선에서 위아래로 떨어뜨린 것뿐이므로
+   실선은 이 하나만 두고 나머지는 점선으로 낮춘다 */
+.sp-line-circadian {
+  stroke: var(--circadian);
+  stroke-width: 2.6;
 }
 
 .sp-line-sleep {
   stroke: var(--circadian);
-  stroke-width: 2.4;
+  stroke-dasharray: 7 4;
+  stroke-width: 1.7;
+  opacity: 0.85;
 }
 
-/* 깨는 선은 잠드는 선의 짝이라 같은 색에 점선으로만 구분한다 */
 .sp-line-wake {
   stroke: var(--circadian);
-  stroke-dasharray: 5 6;
-  stroke-width: 2;
+  stroke-dasharray: 2 5;
+  stroke-width: 1.7;
+  opacity: 0.7;
 }
 
 .sp-line-doze {
   stroke: var(--pressure);
-  stroke-width: 2.6;
+  stroke-width: 2.4;
+}
+
+/* 졸림 지수 100 위쪽 = 버티지 못하는 구역 */
+.sp-doze-zone {
+  fill: var(--pressure);
+  opacity: 0.06;
+}
+
+.sp-doze-fill {
+  fill: var(--pressure);
+  opacity: 0.16;
+  stroke: none;
+}
+
+/* 0 아래는 "잠들 기미가 없다" 쪽이라 같은 파랑으로 칠하면 뜻이 뒤집힌다 */
+.sp-doze-fill-alert {
+  fill: var(--muted);
+  opacity: 0.12;
+}
+
+/* 졸림 색띠. --pressure의 진하기만 바꿔 쓴다(fill-opacity는 app.js가 칸마다 넣는다) */
+.sp-heat-base {
+  fill: var(--surface);
+  stroke: var(--line);
+  stroke-width: 1;
+}
+
+.sp-heat {
+  stroke: none;
+  fill: var(--pressure);
+}
+
+/* 슬라이더를 만지기 직전의 곡선 */
+.sp-ghost {
+  fill: none;
+  stroke: var(--muted);
+  stroke-dasharray: 4 4;
+  stroke-width: 2;
+  opacity: 0.45;
+}
+
+.sp-ghost-label {
+  fill: var(--muted);
+  font-size: 11px;
+  font-weight: 800;
 }
 
 .sp-end-label {
@@ -3183,15 +3380,42 @@ select {
   fill: var(--adenosine);
 }
 
+.sp-end-circadian,
 .sp-end-sleep,
 .sp-end-wake {
   fill: var(--circadian);
+}
+
+.sp-end-sleep,
+.sp-end-wake {
+  font-size: 11px;
+  font-weight: 700;
 }
 
 .sp-end-doze {
   fill: var(--muted);
   font-size: 11px;
   font-weight: 700;
+}
+
+/* 지금 만지고 있는 슬라이더가 움직이는 곡선을 굵게 한다.
+   data-focus는 app.js가 HTML의 data-affects를 읽어 넣는다 */
+#sleepChart[data-focus="adenosine"] .sp-line-adenosine {
+  stroke-width: 5.2;
+}
+
+#sleepChart[data-focus="circadian"] .sp-line-circadian {
+  stroke-width: 4.4;
+}
+
+#sleepChart[data-focus="threshold"] .sp-line-sleep,
+#sleepChart[data-focus="threshold"] .sp-line-wake {
+  stroke-width: 3.2;
+  opacity: 1;
+}
+
+#sleepChart[data-focus="threshold"] .sp-threshold-band {
+  opacity: 0.24;
 }
 
 .sp-forced-line {
@@ -3230,8 +3454,13 @@ select {
   fill: var(--adenosine);
 }
 
+.sp-dot-circadian,
 .sp-dot-sleep {
   fill: var(--circadian);
+}
+
+.sp-dot-sleep {
+  opacity: 0.55;
 }
 
 .sp-dot-doze {
@@ -3262,9 +3491,73 @@ select {
   font-weight: 900;
 }
 
+/* 세로가 짧은 화면에서는 고정 덩어리가 화면보다 커져서 아래쪽이 잘린다.
+   그러면 고정이 오히려 방해가 되므로 설명과 요약부터 줄인다. */
+@media (max-height: 780px) {
+  .sp-pane-lead p {
+    display: none;
+  }
+
+  .sp-summary b {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 1080px) {
+  .sp-summary {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .sp-control-foot {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .sp-control-foot .drag-help,
+  .sp-control-foot .button-row {
+    grid-column: span 2;
+  }
+}
+
+/* 좁은 화면에서는 고정을 푼다. 세로가 모자라 그래프가 화면을 다 먹어 버린다 */
 @media (max-width: 900px) {
+  .sp-chart-pane {
+    position: static;
+    padding: 14px;
+  }
+
+  .sp-control-pane {
+    padding: 12px 14px 16px;
+  }
+
+  .sp-pane-head {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  .sp-pane-lead {
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .sp-page .legend {
+    justify-content: flex-start;
+  }
+
   .sp-summary {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  /* 폭에 맞춰 줄이면 사흘치 차트가 130px까지 납작해져 아무것도 안 읽힌다.
+     세로 크기를 지키고 가로로 밀어 보게 한다. */
+  .sp-frame {
+    overflow-x: auto;
+  }
+
+  #sleepChart {
+    min-width: 720px;
+    /* 강제수면 드래그 때문에 touch-action:none이 걸려 있는데, 그대로 두면 옆으로 밀 수가 없다 */
+    touch-action: pan-x;
   }
 }
 
