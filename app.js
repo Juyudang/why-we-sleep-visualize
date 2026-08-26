@@ -1237,6 +1237,22 @@ svg.addEventListener("click", (event) => {
   drawChart();
 });
 
+// 읽는 법 안내는 그래프 위에 겹쳐 뜬다. 덮고 있는 동안은 드래그로 강제수면을 만들 수 없으므로
+// 바깥을 누르거나 Esc를 치면 닫히게 한다. details 기본 동작에는 이게 없다.
+const guide = document.querySelector(".sp-guide");
+if (guide !== null) {
+  document.addEventListener("pointerdown", (event) => {
+    if (!guide.open) return;
+    if (guide.contains(event.target)) return;
+    guide.open = false;
+  });
+  document.addEventListener("keydown", (event) => {
+    if (event.key !== "Escape" || !guide.open) return;
+    guide.open = false;
+    guide.querySelector("summary").focus();
+  });
+}
+
 // 탭을 떠나면 재생을 멈춘다. 안 그러면 돌아왔을 때 시간이 엉뚱한 데 가 있다.
 document.addEventListener("visibilitychange", () => {
   if (document.hidden) stopPlaying();

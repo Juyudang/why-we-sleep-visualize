@@ -4058,3 +4058,269 @@ select {
     break-inside: avoid;
   }
 }
+
+/* ── 수면압력: 그래프 읽는 법 안내 ─────────────────────────
+   차트 바로 위에 놓되 기본은 접어 둔다. 펼친 채로 두면 안내문 높이만큼 차트가
+   화면 밖으로 밀려서, 조절판을 옆으로 옮겨 얻은 "그래프가 한 화면에 들어온다"가 도로 깨진다.
+   펼쳤을 때도 max-height로 잘라 스스로 스크롤하게 해 차트를 화면 밖으로 밀지 않는다 */
+.sp-guide {
+  /* 그래프 열과 조절판 열 위에 한 줄로 걸친다. 안내는 둘 다에 대한 설명이라
+     그래프 열 안에만 두면 조절판 설명이 엉뚱한 데 붙어 있는 꼴이 된다 */
+  grid-column: 1 / -1;
+  position: relative;
+  z-index: 6;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--surface);
+}
+
+.sp-guide > summary {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 9px 14px;
+  cursor: pointer;
+  list-style: none;
+  font-size: 0.84rem;
+}
+
+/* 사파리는 list-style만으로 삼각형이 안 사라진다 */
+.sp-guide > summary::-webkit-details-marker {
+  display: none;
+}
+
+/* 직접 그린 화살표. 열리면 아래를 가리킨다 */
+.sp-guide > summary::after {
+  content: "";
+  flex: 0 0 auto;
+  margin-left: auto;
+  width: 7px;
+  height: 7px;
+  border-right: 2px solid var(--muted);
+  border-bottom: 2px solid var(--muted);
+  transform: rotate(-45deg);
+  transition: transform 0.15s ease;
+}
+
+.sp-guide[open] > summary::after {
+  transform: rotate(45deg);
+}
+
+.sp-guide-title {
+  flex: 0 0 auto;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+/* 접힌 상태에서도 최소한의 색 대응표는 보이게 한다.
+   좁은 화면에서는 줄바꿈보다 통째로 감추는 게 낫다 — 헤더가 두 줄이 되면 차트가 또 밀린다 */
+.sp-guide-hint {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+.sp-guide-hint .sp-key {
+  margin-left: 6px;
+}
+
+.sp-guide-hint .sp-key:first-child {
+  margin-left: 0;
+}
+
+/* 흐름에서 빼내 그래프 위에 겹친다. 문서 흐름에 두면 펼치는 순간 안내문 높이만큼
+   차트가 아래로 밀려 "그래프가 한 화면에 들어온다"가 깨졌다. 이제 펼쳐도 차트는 제자리다 */
+.sp-guide-body {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: -1px;
+  right: -1px;
+  padding: 16px 18px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  /* 아래 곡선이 글자 뒤로 비치면 둘 다 못 읽는다. 불투명하게 덮는다 */
+  background: var(--surface);
+  box-shadow: 0 18px 40px rgba(24, 32, 42, 0.16);
+  max-height: min(640px, 74vh);
+  overflow-y: auto;
+}
+
+/* 칸 나누기는 안쪽에서 한다. 스크롤 상자에 직접 multi-column을 걸면 높이가 잘린 만큼
+   칸이 옆으로 늘어나 가로 스크롤이 생긴다. 안쪽은 높이 제한이 없어 자연스레 균형이 맞는다.
+   그리드로 나누던 때는 한 행의 키가 제일 긴 절에 맞춰져 짧은 절 아래가 통째로 비었다 */
+.sp-guide-cols {
+  column-width: 300px;
+  column-gap: 26px;
+}
+
+.sp-guide-body section {
+  break-inside: avoid;
+  /* 절 제목이 칸 맨 아래에 홀로 남는 걸 막는다 */
+  margin: 0 0 14px;
+}
+
+.sp-guide-body h3 {
+  margin: 0 0 7px;
+  font-size: 0.86rem;
+  color: var(--ink);
+}
+
+.sp-guide-body ul,
+.sp-guide-body ol {
+  margin: 0;
+  padding-left: 17px;
+}
+
+.sp-guide-body li {
+  margin-bottom: 6px;
+  color: var(--muted);
+  font-size: 0.8rem;
+  line-height: 1.6;
+  word-break: keep-all;
+}
+
+.sp-guide-body b {
+  color: var(--ink);
+}
+
+/* 색 대응표. dt에 견본, dd에 설명 */
+.sp-guide-keys {
+  margin: 0;
+}
+
+.sp-guide-keys dt {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.sp-guide-keys dt:first-child {
+  margin-top: 0;
+}
+
+.sp-guide-keys dd {
+  margin: 2px 0 0 24px;
+  color: var(--muted);
+  font-size: 0.8rem;
+  line-height: 1.6;
+  word-break: keep-all;
+}
+
+/* "무엇을 조작하고 무엇을 볼 것인가"를 두 줄로 분리한다. 한 문단이면 둘이 섞여 안 읽힌다 */
+.sp-guide-try li > b {
+  display: block;
+  margin-bottom: 2px;
+}
+
+.sp-guide-try li > span {
+  display: block;
+}
+
+/* 범례 견본. 선은 가로 막대, 면은 정사각형 — 그래프에서의 생김새를 그대로 옮긴다 */
+.sp-key {
+  flex: 0 0 auto;
+  display: inline-block;
+  width: 16px;
+  height: 3px;
+  border-radius: 2px;
+  vertical-align: middle;
+}
+
+.sp-key-adenosine {
+  background: var(--adenosine);
+}
+
+.sp-key-circadian {
+  background: var(--circadian);
+}
+
+.sp-key-doze {
+  background: var(--pressure);
+}
+
+/* 점선 두 개는 stroke-dasharray를 그라디언트로 흉내 낸다. 그래프의 7 4 / 2 5와 같은 비율 */
+.sp-key-sleep {
+  height: 2px;
+  background: repeating-linear-gradient(
+    to right,
+    var(--circadian) 0 5px,
+    transparent 5px 8px
+  );
+}
+
+.sp-key-wake {
+  height: 2px;
+  background: repeating-linear-gradient(
+    to right,
+    var(--circadian) 0 2px,
+    transparent 2px 5px
+  );
+}
+
+.sp-key-band,
+.sp-key-overflow,
+.sp-key-sleepband,
+.sp-key-now {
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+}
+
+.sp-key-band {
+  background: color-mix(in srgb, var(--circadian) 14%, transparent);
+  border: 1px solid color-mix(in srgb, var(--circadian) 30%, transparent);
+}
+
+.sp-key-overflow {
+  background: color-mix(in srgb, var(--adenosine) 45%, transparent);
+}
+
+.sp-key-sleepband {
+  background: var(--sleep);
+}
+
+.sp-key-now {
+  width: 3px;
+  height: 13px;
+  border-radius: 2px;
+  background: var(--ink);
+}
+
+@media (max-width: 1080px) {
+  /* 좁아지면 요약 줄이 두 줄이 되어 차트를 밀어낸다. 제목만 남긴다 */
+  .sp-guide-hint {
+    display: none;
+  }
+}
+
+/* 인쇄할 때 안내가 페이지 경계에서 반토막 나지 않게만 한다 */
+@media print {
+  .sp-guide {
+    break-inside: avoid;
+  }
+
+  .sp-guide > summary::after {
+    display: none;
+  }
+
+  .sp-guide-body {
+    position: static;
+    max-height: none;
+    overflow: visible;
+    box-shadow: none;
+  }
+
+  .sp-guide-cols {
+    column-width: auto;
+    column-count: 2;
+  }
+}
