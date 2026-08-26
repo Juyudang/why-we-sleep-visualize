@@ -22,5 +22,7 @@ function formatHours(hours) {
   const totalMinutes = Math.round(hours * 60);
   const whole = Math.floor(totalMinutes / 60);
   const minutes = totalMinutes % 60;
+  // 한 시간이 안 되는데 "0시간 6분"이라고 적으면 눈에 걸린다. 다만 정확히 0일 때는 "0시간"이 맞다.
+  if (whole === 0 && minutes > 0) return `${minutes}분`;
   return minutes === 0 ? `${whole}시간` : `${whole}시간 ${minutes}분`;
 }
