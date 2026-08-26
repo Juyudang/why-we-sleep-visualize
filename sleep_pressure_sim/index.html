@@ -17,104 +17,139 @@
       </section>
 
       <section class="visual-stage sp-stage" aria-label="아데노신과 수면압력 시뮬레이터">
-        <!-- 이 덩어리는 화면 위에 고정된다. 아래 슬라이더를 만지는 내내 그래프가 눈앞에 남아야
-             "값을 바꿨더니 무엇이 달라졌는지"를 볼 수 있다. -->
-        <div class="sp-chart-pane">
-          <div class="sp-pane-head">
-            <div class="sp-pane-lead">
-              <h2>사흘 동안의 흐름</h2>
-              <p>
-                깨어 있는 동안 <b>아데노신</b>이 차오르고, 몸시계의 <b>각성 신호</b>가 그 반대편에서
-                잠들지 못하게 붙잡습니다. 두 힘의 거리가 아래의 <b>졸림 지수</b>입니다.
+        <!-- 왼쪽은 그래프, 오른쪽은 조절판. 전체를 한 판에 그리던 때는 가로를 다 써야 해서
+             조절판이 아래로 밀려났고, 그래서 값과 그래프를 함께 볼 수가 없었다. -->
+        <div class="sp-workspace">
+          <div class="sp-chart-col">
+            <div class="sp-pane-head">
+              <div class="sp-pane-lead">
+                <h2>지금 이 순간</h2>
+                <p>
+                  깨어 있는 동안 <b>아데노신</b>이 차오르고, 몸시계의 <b>각성 신호</b>가 그 반대편에서
+                  잠들지 못하게 붙잡습니다. 두 힘의 거리가 아래의 <b>졸림 지수</b>입니다.
+                </p>
+              </div>
+              <div class="legend" aria-label="그래프 범례">
+                <span><i class="swatch swatch-adenosine"></i>아데노신</span>
+                <span><i class="swatch swatch-circadian"></i>각성 신호 · 두 문턱</span>
+                <span><i class="swatch swatch-pressure"></i>졸림 지수</span>
+              </div>
+            </div>
+
+            <div class="chart-frame sp-frame">
+              <svg id="sleepChart" role="img" aria-labelledby="chart-title chart-desc"></svg>
+            </div>
+
+            <div class="sp-minimap">
+              <span class="sp-minimap-label" id="minimapLabel">3일 전체 — 끌면 시간이 움직입니다</span>
+              <div class="chart-frame sp-mini-frame">
+                <svg id="sleepMinimap" role="img" aria-label="전체 기간 중 지금 보고 있는 구간"></svg>
+              </div>
+            </div>
+
+            <div class="sp-now" aria-label="지금 상태" aria-live="polite">
+              <div><span>지금</span><b id="nowClock">—</b></div>
+              <div><span>상태</span><b id="nowState">—</b></div>
+              <div><span>아데노신</span><b id="nowAdenosine">—</b></div>
+              <div><span>각성 신호</span><b id="nowCircadian">—</b></div>
+              <div><span>졸림 지수</span><b id="nowDoze">—</b></div>
+              <div><span>다음 변화</span><b id="nowNext">—</b></div>
+            </div>
+
+            <div class="sp-recap" aria-label="전체 요약">
+              <div><span>잠든 횟수</span><b id="sumNights">—</b></div>
+              <div><span>평균 길이</span><b id="sumLength">—</b></div>
+              <div><span>평균 취침</span><b id="sumBedtime">—</b></div>
+              <div><span>평균 기상</span><b id="sumWaketime">—</b></div>
+              <div><span>최고 졸림</span><b id="sumPeakDoze">—</b></div>
+              <div><span>깰 때 잔여</span><b id="sumLeftover">—</b></div>
+            </div>
+          </div>
+
+          <div class="sp-rail">
+            <div class="sp-time-box">
+              <div class="sp-time-row">
+                <span>지금 시각 <b id="nowHourValue"></b></span>
+                <button id="playToggle" type="button" class="sp-play" aria-pressed="false">재생</button>
+              </div>
+              <input id="nowHour" type="range" min="0" max="72" step="0.05" value="16" aria-label="지금 시각" />
+
+              <div class="sp-time-row">
+                <span>한 화면에 보이는 시간</span>
+                <div class="sp-seg" role="group" aria-label="한 화면에 보이는 시간">
+                  <button type="button" data-hours="12">12시간</button>
+                  <button type="button" data-hours="24">24시간</button>
+                  <button type="button" data-hours="48">48시간</button>
+                </div>
+              </div>
+
+              <div class="sp-time-row">
+                <span>시뮬레이션 길이 <b id="dayCountValue"></b></span>
+              </div>
+              <input id="dayCount" type="range" min="2" max="10" step="1" value="3" aria-label="시뮬레이션 길이(일)" />
+            </div>
+
+            <div class="control-panel sp-sliders" aria-label="시뮬레이션 조절">
+              <!-- data-affects: 이 슬라이더가 움직이는 곡선. app.js가 읽어서 해당 곡선을 굵게 강조한다 -->
+              <label data-affects="adenosine">
+                <span>차오르는 시상수 <b id="riseTauValue"></b></span>
+                <input id="riseTau" type="range" min="10" max="24" step="0.2" value="18.2" />
+                <small>남은 거리의 63%를 메우는 시간. 표준 18.2시간</small>
+              </label>
+              <label data-affects="adenosine">
+                <span>빠지는 시상수 <b id="fallTauValue"></b></span>
+                <input id="fallTau" type="range" min="2" max="8" step="0.1" value="4.2" />
+                <small>자는 동안의 시상수. 8시간 자도 15%가 남는다</small>
+              </label>
+              <label data-affects="adenosine">
+                <span>아침 잔여 아데노신 <b id="initialAdenosineValue"></b></span>
+                <input id="initialAdenosine" type="range" min="0" max="60" step="1" value="9" />
+                <small>푹 잔 다음 날 아침이 9%. 올리면 빚지고 시작</small>
+              </label>
+              <label data-affects="circadian">
+                <span>몸시계 주기 <b id="periodValue"></b></span>
+                <input id="cyclePeriod" type="range" min="23" max="25.5" step="0.1" value="24.2" />
+                <small>고유 주기는 평균 24.2시간. 매일 조금씩 밀린다</small>
+              </label>
+              <label data-affects="circadian">
+                <span>각성 최저 시각 <b id="troughClockValue"></b></span>
+                <input id="troughClock" type="range" min="0" max="23" step="1" value="5" />
+                <small>심부 체온 최저점 무렵. 하루가 통째로 이동한다</small>
+              </label>
+              <label data-affects="threshold">
+                <span>잠드는 선 높이 <b id="sleepThresholdValue"></b></span>
+                <input id="sleepThreshold" type="range" min="-10" max="25" step="1" value="0" />
+                <small>0이면 각성 신호와 만나는 순간 잠든다</small>
+              </label>
+              <label data-affects="threshold">
+                <span>깨는 선 깊이 <b id="wakeGapValue"></b></span>
+                <input id="wakeGap" type="range" min="5" max="40" step="1" value="20" />
+                <small>각성 신호에서 이만큼 아래. 깊을수록 오래 잔다</small>
+              </label>
+              <label data-affects="adenosine">
+                <span>수면 한계 시간 <b id="sleepLimitValue"></b></span>
+                <input id="sleepLimit" type="range" min="4" max="12" step="0.5" value="9" />
+                <small>알람이다. 깨는 선에 닿지 않아도 일어난다</small>
+              </label>
+            </div>
+
+            <div class="sp-control-foot">
+              <label class="toggle-card">
+                <span>자동수면 <b id="autoSleepValue"></b></span>
+                <input id="autoSleep" type="checkbox" checked />
+              </label>
+              <label class="toggle-card">
+                <span>강제수면 만들기 <b id="forcedModeValue"></b></span>
+                <input id="forcedMode" type="checkbox" />
+              </label>
+              <div class="button-row">
+                <button id="clearForcedSleep" type="button">강제수면 해제</button>
+                <button id="resetDefaults" type="button">기본값으로</button>
+              </div>
+              <p class="drag-help">
+                드래그로 구간 생성, 클릭으로 삭제.
+                <b id="forcedCountValue"></b>
               </p>
-            </div>
-            <div class="legend" aria-label="그래프 범례">
-              <span><i class="swatch swatch-adenosine"></i>아데노신(쌓인 양)</span>
-              <span><i class="swatch swatch-circadian"></i>각성 신호 · 두 문턱</span>
-              <span><i class="swatch swatch-pressure"></i>졸림 지수</span>
-            </div>
-          </div>
-
-          <div class="chart-frame sp-frame">
-            <svg id="sleepChart" role="img" aria-labelledby="chart-title chart-desc"></svg>
-          </div>
-
-          <div class="sp-summary" aria-label="사흘 요약">
-            <div><span>잠든 횟수</span><b id="sumNights">—</b></div>
-            <div><span>평균 수면 길이</span><b id="sumLength">—</b></div>
-            <div><span>평균 취침</span><b id="sumBedtime">—</b></div>
-            <div><span>평균 기상</span><b id="sumWaketime">—</b></div>
-            <div><span>최고 졸림 지수</span><b id="sumPeakDoze">—</b></div>
-            <div><span>깰 때 남은 아데노신</span><b id="sumLeftover">—</b></div>
-          </div>
-        </div>
-
-        <div class="sp-control-pane">
-          <p class="sp-hint">
-            슬라이더를 움직이면 위 그래프가 즉시 바뀌고, <b>바꾸기 직전 곡선이 잠시 회색으로</b> 남습니다.
-            그래프 위에 마우스를 올리면 그 시각의 값을 읽을 수 있습니다.
-          </p>
-
-          <div class="control-panel sp-sliders" aria-label="시뮬레이션 조절">
-            <!-- data-affects: 이 슬라이더가 움직이는 곡선. app.js가 읽어서 해당 곡선을 굵게 강조한다 -->
-            <label data-affects="adenosine">
-              <span>아데노신 차오르는 시상수 <b id="riseTauValue"></b></span>
-              <input id="riseTau" type="range" min="10" max="24" step="0.2" value="18.2" />
-              <small>깨어 있을 때 남은 거리의 63%를 메우는 데 걸리는 시간. 표준값 18.2시간</small>
-            </label>
-            <label data-affects="adenosine">
-              <span>아데노신 빠지는 시상수 <b id="fallTauValue"></b></span>
-              <input id="fallTau" type="range" min="2" max="8" step="0.1" value="4.2" />
-              <small>자는 동안의 시상수. 표준값 4.2시간이라 8시간을 자도 15%가 남는다</small>
-            </label>
-            <label data-affects="adenosine">
-              <span>아침에 남아 있던 아데노신 <b id="initialAdenosineValue"></b></span>
-              <input id="initialAdenosine" type="range" min="0" max="60" step="1" value="9" />
-              <small>푹 잔 다음 날 아침이 9%. 올리면 어젯밤 빚을 지고 시작한다</small>
-            </label>
-            <label data-affects="circadian">
-              <span>몸시계 주기 <b id="periodValue"></b></span>
-              <input id="cyclePeriod" type="range" min="23" max="25.5" step="0.1" value="24.2" />
-              <small>사람의 고유 주기는 평균 24.2시간. 24보다 길어서 매일 조금씩 밀린다</small>
-            </label>
-            <label data-affects="circadian">
-              <span>각성 신호가 가장 낮은 시각 <b id="troughClockValue"></b></span>
-              <input id="troughClock" type="range" min="0" max="23" step="1" value="5" />
-              <small>심부 체온 최저점 무렵. 이 값을 옮기면 하루가 통째로 이동한다</small>
-            </label>
-            <label data-affects="threshold">
-              <span>잠드는 선 높이 <b id="sleepThresholdValue"></b></span>
-              <input id="sleepThreshold" type="range" min="-10" max="25" step="1" value="0" />
-              <small>각성 신호에서 이만큼 위. 0이면 두 곡선이 만나는 순간 잠든다</small>
-            </label>
-            <label data-affects="threshold">
-              <span>깨는 선 깊이 <b id="wakeGapValue"></b></span>
-              <input id="wakeGap" type="range" min="5" max="40" step="1" value="20" />
-              <small>각성 신호에서 이만큼 아래. 깊을수록 오래 자야 도달한다</small>
-            </label>
-            <label data-affects="adenosine">
-              <span>수면 한계 시간 <b id="sleepLimitValue"></b></span>
-              <input id="sleepLimit" type="range" min="4" max="12" step="0.5" value="9" />
-              <small>알람에 해당한다. 깨는 선에 닿지 않아도 여기서 일어난다</small>
-            </label>
-          </div>
-
-          <div class="sp-control-foot">
-            <label class="toggle-card">
-              <span>자동수면 <b id="autoSleepValue"></b></span>
-              <input id="autoSleep" type="checkbox" checked />
-            </label>
-            <label class="toggle-card">
-              <span>강제수면 만들기 <b id="forcedModeValue"></b></span>
-              <input id="forcedMode" type="checkbox" />
-            </label>
-            <div class="drag-help">
-              강제수면 만들기를 켜고 그래프 위를 드래그하면 구간이 생성됩니다. 짧게 두 번 클릭해 시작과 끝을 찍어도 됩니다. 생성된 강제수면 영역을 클릭하면 삭제됩니다.
-              <b id="forcedCountValue"></b>
-            </div>
-            <div class="button-row">
-              <button id="clearForcedSleep" type="button">강제수면 모두 해제</button>
-              <button id="resetDefaults" type="button">기본값으로</button>
             </div>
           </div>
         </div>
@@ -142,7 +177,8 @@
           <h3>8시간을 자도 다 안 빠진다</h3>
           <p>
             빠지는 시상수가 4.2시간이라 8시간을 자도 잠들 때의 15%가 남습니다. 이 잔량이 다음 날의
-            출발점이고, 덜 자면 그만큼 높은 데서 하루를 시작하게 됩니다.
+            출발점이고, 덜 자면 그만큼 높은 데서 하루를 시작하게 됩니다. 시뮬레이션 길이를 늘려
+            열흘까지 돌려 보면 이 잔량이 어떻게 누적되는지 보입니다.
           </p>
         </article>
       </section>
