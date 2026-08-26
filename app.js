@@ -56,6 +56,7 @@ const nowPanel = {
   circadian: document.querySelector("#nowCircadian"),
   doze: document.querySelector("#nowDoze"),
   next: document.querySelector("#nowNext"),
+  nextLabel: document.querySelector("#nowNextLabel"),
 };
 
 const summary = {
@@ -439,13 +440,17 @@ function updateNowPanel(points, sleepWindows) {
   nowPanel.doze.textContent = String(Math.round(point.doze));
 
   // 다음 전환까지 얼마나 남았는지. 슬라이더를 만졌을 때 "그래서 언제 자는데?"에 바로 답한다.
+  // "잠들기까지"는 값이 아니라 라벨 쪽에 적는다. 한 칸에 다 넣으면 "잠들기까지 15시간 49분"이
+  // 두 줄로 접히면서 그 칸만 키가 커지고, 같은 행의 여섯 칸이 통째로 늘어나 아래가 밀렸다.
   if (point.sleeping) {
     const current = sleepWindows.find((sleep) => state.nowHour >= sleep.start && state.nowHour < sleep.end);
-    nowPanel.next.textContent = current ? `깨기까지 ${formatHours(current.end - state.nowHour)}` : "—";
+    nowPanel.nextLabel.textContent = current ? "깨기까지" : "다음 변화";
+    nowPanel.next.textContent = current ? formatHours(current.end - state.nowHour) : "—";
     return;
   }
   const next = sleepWindows.find((sleep) => sleep.start > state.nowHour);
-  nowPanel.next.textContent = next ? `잠들기까지 ${formatHours(next.start - state.nowHour)}` : "당분간 없음";
+  nowPanel.nextLabel.textContent = next ? "잠들기까지" : "다음 변화";
+  nowPanel.next.textContent = next ? formatHours(next.start - state.nowHour) : "당분간 없음";
 }
 
 // 사흘 전체를 한 줄로 요약한다. 곡선만 보고는 "그래서 몇 시간 잤는데?"에 답이 안 된다.
